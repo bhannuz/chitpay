@@ -3,253 +3,218 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AK Chit Funds - Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<title>AK Chit Funds - Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#0a0f1e;--surface:#111827;--surface2:#1a2235;
   --accent:#f59e0b;--text:#f1f5f9;--muted:#64748b;
   --border:rgba(255,255,255,0.08);
   --gold:linear-gradient(135deg,#f59e0b,#fbbf24,#d97706);
-  --red:#ef4444;--green:#10b981;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-width:430px;margin:0 auto;min-height:100vh;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden;}
 
-/* NAVIGATION & UI */
-.topbar{position:sticky;top:0;z-index:100;background:rgba(10,15,30,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:15px 20px;display:flex;justify-content:space-between;align-items:center;}
-.brand{font-weight:800;background:var(--gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:18px;}
-.content{padding:20px;padding-bottom:120px;}
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(10,15,30,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
+.brand-name{font-size:17px;font-weight:800;background:var(--gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sync-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;transition:all .3s;}
+.sync-badge.synced{background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.3);}
+
+.page{display:none;animation:fadeUp .3s ease;}
+.page.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.content{padding:20px 20px 170px;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(17,24,39,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);z-index:100;}
+.quick-add-bar{display:flex;gap:8px;padding:8px 12px;background:rgba(10,15,30,.95);}
+.quick-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;}
+.quick-btn.member{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.3);color:var(--accent);}
+.bottom-nav-btns{display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+.nav-label{font-size:10px;color:var(--muted);}
+.nav-item.active .nav-label{color:var(--accent);}
+
+/* COMMON */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;}
-.section-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:700;}
-
-/* FORMS */
-.form-group{margin-bottom:16px;position:relative;}
-.form-label{display:block;font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:700;}
-.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;color:var(--text);font-family:inherit;outline:none;}
+.form-label{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:8px;display:block;text-transform:uppercase;}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'Sora',sans-serif;font-size:14px;outline:none;}
+.form-group{margin-bottom:14px;}
 
 /* SEARCH RESULTS */
-#search-results{display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--accent);border-radius:12px;z-index:1000;max-height:250px;overflow-y:auto;margin-top:5px;box-shadow:0 10px 30px rgba(0,0,0,0.5);}
-.search-item{padding:12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;}
+#search-results{display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--accent);border-radius:12px;z-index:1000;max-height:200px;overflow-y:auto;margin-top:4px;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
+.search-item{padding:12px;border-bottom:1px solid var(--border);cursor:pointer;}
+.search-item:last-child{border-bottom:none;}
 
-/* BUTTONS */
-.primary-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;color:#000;font-weight:800;cursor:pointer;}
-.wa-btn{background:#25D366; color:#fff; padding:12px; border-radius:10px; text-decoration:none; display:inline-block; font-size:13px; text-align:center; width:100%; margin-top:10px;}
-.print-btn{background:#3b82f6; color:#fff; padding:12px; border-radius:10px; border:none; width:100%; margin-top:10px; cursor:pointer;}
-
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:200;display:none;align-items:flex-end;justify-content:center;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--surface);width:100%;border-radius:24px 24px 0 0;padding:24px;max-height:90vh;overflow-y:auto;}
-
-/* PRINT STYLES */
-@media print {
-    body * { visibility: hidden; }
-    #invoice-print, #invoice-print * { visibility: visible; }
-    #invoice-print { position: absolute; left: 0; top: 0; width: 100%; color: #000; background: #fff; padding: 20px; }
-    .no-print { display: none; }
-}
+.modal{background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:24px 20px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--border);max-height:90vh;overflow-y:auto;}
+.primary-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:15px;color:#000;font-weight:700;cursor:pointer;margin-top:4px;}
+.secondary-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:13px;color:var(--text);cursor:pointer;margin-top:10px;}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-    <div class="brand">AK CHIT FUNDS</div>
-    <div style="font-size:10px; color:var(--green);" id="status">● Portal Active</div>
+  <div class="brand-name">🏆 AK Chit Funds</div>
+  <div class="sync-badge synced" id="syncBadge">☁️ Synced</div>
 </div>
 
-<div class="content">
+<div class="page active" id="page-home">
+  <div class="content">
+    <div style="margin-bottom:16px;">
+      <div style="font-size:22px;font-weight:800;">Bhanu Prasad</div>
+      <div style="font-size:12px;color:var(--muted);">Chit Fund Administrator</div>
+    </div>
+
     <div class="card">
-        <div class="section-title">📊 Business Summary</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-            <div><small style="color:var(--muted)">Members</small><div id="count-m" style="font-size:20px;font-weight:800;">0</div></div>
-            <div><small style="color:var(--muted)">Groups</small><div id="count-g" style="font-size:20px;font-weight:800;">0</div></div>
+       <label class="form-label">Quick Stats</label>
+       <div style="display:flex; gap:10px; justify-content:space-between;">
+         <div><span id="st-members">0</span> Members</div>
+         <div><span id="st-groups">0</span> Groups</div>
+       </div>
+    </div>
+
+    <button class="primary-btn" onclick="openPaymentModal()" style="margin-bottom:20px;">💳 New Payment</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal">
+    <div style="font-size:18px; font-weight:700; margin-bottom:18px;">💳 Record Payment</div>
+    
+    <div class="form-group" style="position:relative;">
+      <label class="form-label">Member Name</label>
+      <input type="text" class="form-input" id="pay-member-search" placeholder="🔍 Type to search members..." autocomplete="off" oninput="filterMemberSearch()" onfocus="showMemberResults()">
+      <input type="hidden" id="pay-member-id">
+      <div id="search-results"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Group Name</label>
+      <select class="form-input" id="pay-group" disabled><option value="">-- Select Group --</option></select>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group">
+            <label class="form-label">Chit Val (₹)</label>
+            <input class="form-input" type="number" id="pay-chitval" oninput="calcBalance()">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Paid (₹)</label>
+            <input class="form-input" type="number" id="pay-amount" oninput="calcBalance()">
         </div>
     </div>
 
-    <button class="primary-btn" onclick="openModal()">💳 Record New Payment</button>
-
-    <div class="card" style="margin-top:20px;">
-        <div class="section-title">🚨 Defaulter List</div>
-        <div id="defaulter-list" style="font-size:13px;">Loading...</div>
+    <div class="form-group">
+      <label class="form-label">Balance (₹)</label>
+      <input class="form-input" type="number" id="pay-balance" readonly style="opacity:.6;">
     </div>
+
+    <button class="primary-btn" onclick="savePayment()">✓ Save Payment</button>
+    <button class="secondary-btn" onclick="closeModal('paymentModal')">Cancel</button>
+  </div>
 </div>
 
-<div class="modal-overlay" id="payModal">
-    <div class="modal">
-        <div id="payment-form">
-            <div style="font-size:20px; font-weight:800; margin-bottom:20px;">New Receipt</div>
-            
-            <div class="form-group">
-                <label class="form-label">Search Member</label>
-                <input type="text" class="form-input" id="search-input" placeholder="Type name..." oninput="doSearch()" onfocus="showResults()">
-                <input type="hidden" id="selected-id">
-                <input type="hidden" id="selected-phone">
-                <div id="search-results"></div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Group & Phone</label>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <input type="text" class="form-input" id="member-group" readonly placeholder="Group">
-                    <input type="text" class="form-input" id="member-phone" readonly placeholder="Phone">
-                </div>
-            </div>
-
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <div class="form-group"><label class="form-label">Chit Value</label><input type="number" class="form-input" id="inp-val" oninput="calc()"></div>
-                <div class="form-group"><label class="form-label">Paid Amount</label><input type="number" class="form-input" id="inp-paid" oninput="calc()"></div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Balance</label>
-                <input type="number" class="form-input" id="inp-bal" readonly style="color:var(--accent); font-weight:800;">
-            </div>
-
-            <div class="form-group" style="display:flex; align-items:center; gap:10px; background:var(--surface2); padding:12px; border-radius:12px;">
-                <input type="checkbox" id="inp-picked" style="width:20px; height:20px;">
-                <label for="inp-picked">Confirm Chit Picked?</label>
-            </div>
-            <div id="picked-warning" style="display:none; color:var(--red); font-size:11px; margin-bottom:10px;">⚠️ Member already picked chit.</div>
-
-            <button class="primary-btn" id="save-btn" onclick="save()">Save & Generate Invoice</button>
-            <button class="secondary-btn" onclick="closeModal()">Cancel</button>
-        </div>
-
-        <div id="post-save-actions" style="display:none; text-align:center;">
-            <div style="font-size:40px; margin-bottom:10px;">✅</div>
-            <h3 style="margin-bottom:20px;">Payment Recorded!</h3>
-            <a href="#" id="wa-link" class="wa-btn" target="_blank">💬 Send WhatsApp Receipt</a>
-            <button class="print-btn" onclick="window.print()">🖨️ Print Invoice</button>
-            <button class="secondary-btn" onclick="location.reload()">Done</button>
-        </div>
-    </div>
-</div>
-
-<div id="invoice-print" style="display:none; font-family:'Courier New', monospace; background:#fff; color:#000; padding:20px;">
-    <center>
-        <h2>AK CHIT FUNDS</h2>
-        <p>Official Payment Receipt</p>
-        <hr>
-    </center>
-    <div style="margin:20px 0;">
-        <p><b>Date:</b> <span id="inv-date"></span></p>
-        <p><b>Member:</b> <span id="inv-name"></span></p>
-        <p><b>Group:</b> <span id="inv-group"></span></p>
-        <hr>
-        <p><b>Chit Value:</b> ₹<span id="inv-val"></span></p>
-        <p><b>Amount Paid:</b> ₹<span id="inv-paid"></span></p>
-        <p><b>Balance Due:</b> ₹<span id="inv-bal"></span></p>
-        <hr>
-        <p><b>Chit Picked:</b> <span id="inv-picked"></span></p>
-    </div>
-    <center><p>Thank you for your payment!</p></center>
-</div>
+<nav class="bottom-nav">
+  <div class="quick-add-bar">
+    <div class="quick-btn member" onclick="alert('Open Add Member Modal')">➕ New Member</div>
+  </div>
+  <div class="bottom-nav-btns">
+    <div class="nav-item active"><span class="nav-label">Home</span></div>
+  </div>
+</nav>
 
 <script>
+// DB CONFIG
 const SB_URL='https://fxmulysdirqrkixdqusg.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4bXVseXNkaXJxcmtpeGRxdXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDEzMTMsImV4cCI6MjA4NzQxNzMxM30.Vlptcq0oI5-oA4CtpshjqAvG_yEM-t1TuXfKXpfxgf4';
-const H={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+const H={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=representation'};
 
-let members=[], payments=[];
+let members=[], groups=[], payments=[];
 
-async function load(){
-    const [rm, rp] = await Promise.all([
-        fetch(`${SB_URL}/rest/v1/members?select=*`,{headers:H}).then(r=>r.json()),
-        fetch(`${SB_URL}/rest/v1/payments?select=*`,{headers:H}).then(r=>r.json())
-    ]);
-    members=rm; payments=rp;
-    document.getElementById('count-m').textContent=members.length;
-    renderDefaulters();
-}
-
-function renderDefaulters(){
-    const balances = {};
-    payments.forEach(p => balances[p.member_id] = (balances[p.member_id] || 0) + (p.balance_amt || 0));
-    const defs = members.filter(m => balances[m.id] > 0);
-    document.getElementById('defaulter-list').innerHTML = defs.map(m => `
-        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
-            <span>${m.name}</span>
-            <span style="color:var(--red); font-weight:800;">₹${balances[m.id]}</span>
-        </div>
-    `).join('') || "No pending balances!";
-}
-
-function showResults(){ document.getElementById('search-results').style.display='block'; doSearch(); }
-
-function doSearch(){
-    const q = document.getElementById('search-input').value.toLowerCase();
-    const container = document.getElementById('search-results');
-    const filtered = members.filter(m => m.name.toLowerCase().includes(q));
-    container.innerHTML = filtered.map(m => {
-        const picked = payments.some(p => p.member_id === m.id && p.chit_picked === 'Yes');
-        return `<div class="search-item" onclick="selectMember('${m.id}','${m.name}','${m.group_name}','${m.phone}',${picked})">
-            <span>${m.name}</span> <small>${m.group_name}</small>
-        </div>`;
-    }).join('');
-}
-
-function selectMember(id, name, group, phone, picked){
-    document.getElementById('selected-id').value = id;
-    document.getElementById('search-input').value = name;
-    document.getElementById('member-group').value = group;
-    document.getElementById('member-phone').value = phone || "No Number";
-    document.getElementById('search-results').style.display = 'none';
+// FETCH DATA
+async function init(){
+  try {
+    const rm = await fetch(`${SB_URL}/rest/v1/members?select=*`, {headers:H});
+    members = await rm.json();
+    document.getElementById('st-members').textContent = members.length;
     
-    const chk = document.getElementById('inp-picked');
-    chk.disabled = picked;
-    chk.checked = false;
-    document.getElementById('picked-warning').style.display = picked ? 'block' : 'none';
+    const rg = await fetch(`${SB_URL}/rest/v1/groups?select=*`, {headers:H});
+    groups = await rg.json();
+    document.getElementById('st-groups').textContent = groups.length;
+  } catch(e) { console.error("Load failed", e); }
 }
 
-function calc(){
-    const v = parseFloat(document.getElementById('inp-val').value)||0;
-    const p = parseFloat(document.getElementById('inp-paid').value)||0;
-    document.getElementById('inp-bal').value = Math.max(0, v - p);
+// SEARCH LOGIC
+function showMemberResults() {
+  document.getElementById('search-results').style.display = 'block';
+  filterMemberSearch();
 }
 
-async function save(){
-    const data = {
-        member_id: document.getElementById('selected-id').value,
-        group_name: document.getElementById('member-group').value,
-        chit_value: parseFloat(document.getElementById('inp-val').value),
-        amount_paid: parseFloat(document.getElementById('inp-paid').value),
-        balance_amt: parseFloat(document.getElementById('inp-bal').value),
-        chit_picked: document.getElementById('inp-picked').checked ? 'Yes' : 'No',
-        paid_on: new Date().toISOString()
-    };
+function filterMemberSearch() {
+  const query = document.getElementById('pay-member-search').value.toLowerCase();
+  const container = document.getElementById('search-results');
+  const filtered = members.filter(m => m.name.toLowerCase().includes(query));
 
-    if(!data.member_id) return alert("Select Member");
+  container.innerHTML = filtered.map(m => `
+    <div class="search-item" onclick="selectSearchMember('${m.id}', '${m.name.replace(/'/g, "\\'")}', '${m.group_name}')">
+      <div style="font-weight:600;">${m.name}</div>
+      <div style="font-size:10px; color:var(--muted);">${m.group_name || 'No Group'}</div>
+    </div>
+  `).join('');
+}
 
-    const resp = await fetch(`${SB_URL}/rest/v1/payments`, {
-        method:'POST', headers:{...H, 'Prefer':'return=representation'}, body:JSON.stringify(data)
+function selectSearchMember(id, name, groupName) {
+  document.getElementById('pay-member-id').value = id;
+  document.getElementById('pay-member-search').value = name;
+  document.getElementById('search-results').style.display = 'none';
+  
+  const gsel = document.getElementById('pay-group');
+  gsel.innerHTML = `<option value="${groupName}">${groupName}</option>`;
+  gsel.disabled = false;
+}
+
+// CALCULATION
+function calcBalance() {
+  const val = parseFloat(document.getElementById('pay-chitval').value) || 0;
+  const paid = parseFloat(document.getElementById('pay-amount').value) || 0;
+  document.getElementById('pay-balance').value = Math.max(0, val - paid);
+}
+
+// SAVE
+async function savePayment() {
+  const data = {
+    member_id: document.getElementById('pay-member-id').value,
+    group_name: document.getElementById('pay-group').value,
+    amount_paid: parseFloat(document.getElementById('pay-amount').value),
+    balance_amt: parseFloat(document.getElementById('pay-balance').value),
+    paid_on: new Date().toISOString()
+  };
+
+  if(!data.member_id) return alert("Select a member");
+
+  try {
+    await fetch(`${SB_URL}/rest/v1/payments`, {
+      method:'POST', headers:H, body:JSON.stringify(data)
     });
-
-    if(resp.ok){
-        // PREPARE WHATSAPP
-        const name = document.getElementById('search-input').value;
-        const phone = document.getElementById('member-phone').value;
-        const msg = `*AK CHIT FUNDS - RECEIPT*%0A------------------%0AHello ${name},%0AWe received your payment of *₹${data.amount_paid}*%0AGroup: ${data.group_name}%0ABalance: ₹${data.balance_amt}%0APicked: ${data.chit_picked}%0A------------------%0A_Thank you!_`;
-        
-        document.getElementById('wa-link').href = `https://wa.me/91${phone}?text=${msg}`;
-        
-        // PREPARE INVOICE
-        document.getElementById('inv-date').textContent = new Date().toLocaleDateString();
-        document.getElementById('inv-name').textContent = name;
-        document.getElementById('inv-group').textContent = data.group_name;
-        document.getElementById('inv-val').textContent = data.chit_value;
-        document.getElementById('inv-paid').textContent = data.amount_paid;
-        document.getElementById('inv-bal').textContent = data.balance_amt;
-        document.getElementById('inv-picked').textContent = data.chit_picked;
-
-        document.getElementById('payment-form').style.display = 'none';
-        document.getElementById('post-save-actions').style.display = 'block';
-    }
+    alert("Payment Saved!");
+    closeModal('paymentModal');
+  } catch(e) { alert("Error saving"); }
 }
 
-function openModal(){ document.getElementById('payModal').classList.add('open'); }
-function closeModal(){ document.getElementById('payModal').classList.remove('open'); }
+function openPaymentModal(){ document.getElementById('paymentModal').classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
-load();
+// Click outside to close search
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.form-group')) document.getElementById('search-results').style.display = 'none';
+});
+
+init();
 </script>
 </body>
 </html>
