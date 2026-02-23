@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AK Chit Funds - Pro Admin</title>
+<title>AK Chit Funds - Master Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#0a0f1e;--surface:#111827;--surface2:#1a2235;
@@ -14,7 +15,7 @@
   --green:#10b981;--red:#ef4444;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-width:430px;margin:0 auto;min-height:100vh;}
 
 /* NAVIGATION */
 .topbar{position:sticky;top:0;z-index:100;background:rgba(10,15,30,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
@@ -29,31 +30,40 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;}
 .stat-val{font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;}
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;}
+/* BUTTONS */
+.primary-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;color:#000;font-weight:800;cursor:pointer;font-family:inherit;}
+.secondary-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:13px;color:var(--text);margin-top:10px;cursor:pointer;}
+.wa-btn{background:#25D366; color:#fff; padding:14px; border-radius:12px; display:block; text-align:center; text-decoration:none; font-weight:800; margin-top:10px;}
+
+/* SEARCH & DROPDOWN */
+#search-results{display:none; background:var(--surface2); border:1px solid var(--border); border-radius:12px; margin-bottom:12px; max-height:150px; overflow-y:auto;}
+.search-item{padding:12px; border-bottom:1px solid var(--border); cursor:pointer;}
+.picked-badge{display:inline-block; background:rgba(16,185,129,0.15); color:var(--green); font-size:8px; font-weight:800; padding:2px 6px; border-radius:4px; border:1px solid var(--green);}
+
+/* BOTTOM NAV & QUICK ADD */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(17,24,39,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);z-index:100;}
+.quick-add-bar{display:flex;gap:8px;padding:8px 12px;background:rgba(10,15,30,0.95);border-bottom:1px solid var(--border);}
+.quick-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;}
+.quick-btn.member{background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.3); color:var(--accent);}
+.quick-btn.group{background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.3); color:var(--green);}
+.bottom-nav-btns{display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+.nav-label{font-size:10px;font-weight:500;color:var(--muted);}
+.nav-item.active .nav-label{color:var(--accent);}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:24px 24px 0 0;width:100%;padding:24px;max-height:85vh;overflow-y:auto;border-top:1px solid var(--border);}
 .form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:12px;font-size:14px;}
-.form-input:disabled{opacity:0.4; cursor:not-allowed;}
 
 /* TABLES */
 .table-wrap{overflow-x:auto; margin-top:10px; border-radius:12px; border:1px solid var(--border);}
 table{width:100%; border-collapse:collapse; font-size:11px; text-align:left;}
 th{background:var(--surface2); padding:10px; color:var(--muted); text-transform:uppercase; font-size:9px;}
 td{padding:10px; border-bottom:1px solid var(--border);}
-.picked-badge{display:inline-block; background:rgba(16,185,129,0.15); color:var(--green); font-size:8px; font-weight:800; padding:2px 6px; border-radius:4px; border:1px solid var(--green);}
 
-/* NAV */
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(17,24,39,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
-.bottom-nav-btns{display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
-.nav-label{font-size:10px;font-weight:500;color:var(--muted);}
-.nav-item.active .nav-label{color:var(--accent);}
-
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:200;display:none;align-items:flex-end;justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:24px;max-height:85vh;overflow-y:auto;border-top:1px solid var(--border);}
-
-#search-results{display:none; background:var(--surface2); border:1px solid var(--border); border-radius:12px; margin-bottom:12px; max-height:150px; overflow-y:auto;}
-.search-item{padding:12px; border-bottom:1px solid var(--border); cursor:pointer;}
+@media print { body * { visibility: hidden; } #invoice-view, #invoice-view * { visibility: visible; } #invoice-view { position: absolute; left: 0; top: 0; width: 100%; background:#fff; color:#000; padding:20px; border:1px solid #000; } }
 </style>
 </head>
 <body>
@@ -63,58 +73,89 @@ td{padding:10px; border-bottom:1px solid var(--border);}
 <div class="page active" id="page-home">
   <div class="content">
     <div style="font-size:22px;font-weight:800;margin-bottom:15px;">Dashboard</div>
-    
     <div class="stats-row">
       <div class="stat-box"><div class="stat-val" id="st-members">0</div><div style="font-size:8px;color:var(--muted)">Members</div></div>
       <div class="stat-box"><div class="stat-val" id="st-groups">0</div><div style="font-size:8px;color:var(--muted)">Groups</div></div>
-      <div class="stat-box"><div class="stat-val" id="st-payments" style="color:var(--green)">₹0</div><div style="font-size:8px;color:var(--muted)">Collection (Today)</div></div>
+      <div class="stat-box"><div class="stat-val" id="st-payments" style="color:var(--green)">₹0</div><div style="font-size:8px;color:var(--muted)">Today's Total</div></div>
     </div>
 
-    <button class="form-input" onclick="openModal('payModal')" style="height:55px; background:linear-gradient(135deg,#f59e0b,#d97706); border:none; color:#000; font-weight:800; cursor:pointer;">💳 New Payment</button>
+    <button class="primary-btn" onclick="openModal('payModal')" style="height:55px; background:linear-gradient(135deg,#f59e0b,#d97706); margin-bottom:20px;">💳 New Payment</button>
 
     <div class="card">
-        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:10px; font-weight:700;">MEMBER CONSOLIDATED SUMMARY</label>
-        <select id="homeMemberSelect" class="form-input" onchange="onHomeMemberChange()" style="margin-bottom:0;">
-            <option value="">-- Select Member --</option>
-        </select>
+        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:10px; font-weight:700;">CONSOLIDATED SUMMARY</label>
+        <select id="homeMemberSelect" class="form-input" onchange="onHomeMemberChange()" style="margin-bottom:0;"><option value="">-- Select Member --</option></select>
     </div>
     <div id="memberPanel"></div>
   </div>
 </div>
 
-<div class="page" id="page-groups">
-  <div class="content"><div style="font-size:22px;font-weight:800;margin-bottom:20px;">Group Aggregates</div><div id="groupReportContainer"></div></div>
-</div>
+<div class="page" id="page-groups"><div class="content"><div style="font-size:22px;font-weight:800;margin-bottom:20px;">Group Aggregates</div><div id="groupReportContainer"></div></div></div>
 
 <div class="modal-overlay" id="payModal">
   <div class="modal">
-    <div style="font-size:18px; font-weight:800; margin-bottom:20px;">Record Receipt</div>
-    <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight:700;">MEMBER SEARCH</label>
-    <input type="text" id="search-input" class="form-input" placeholder="Search..." oninput="doSearch()" onfocus="showResults()">
-    <div id="search-results"></div>
-    
-    <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight:700;">GROUP (LOCKED)</label>
-    <select id="member-group" class="form-input" onchange="checkGroupHistory()" disabled></select>
-    
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-        <div><label style="display:block; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight:700;">CHIT VALUE</label><input type="number" id="inp-chitval" class="form-input" oninput="calcBal()"></div>
-        <div><label style="display:block; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight:700;">PAID AMT</label><input type="number" id="inp-paid" class="form-input" oninput="calcBal()"></div>
+    <div id="payment-form">
+        <div style="font-size:18px; font-weight:800; margin-bottom:20px;">Record Receipt</div>
+        <input type="text" id="search-input" class="form-input" placeholder="Search Member Name..." oninput="doSearch()" onfocus="showResults()">
+        <div id="search-results"></div>
+        <select id="member-group" class="form-input" onchange="checkGroupHistory()" disabled></select>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <input type="number" id="inp-chitval" class="form-input" placeholder="Chit Val" oninput="calcBal()">
+            <input type="number" id="inp-paid" class="form-input" placeholder="Paid Amt" oninput="calcBal()">
+        </div>
+        <input type="number" id="inp-bal" class="form-input" style="color:var(--accent); font-weight:700;" placeholder="Balance" readonly>
+        <div style="display:flex; align-items:center; gap:10px; background:var(--surface2); padding:15px; border-radius:12px; margin-bottom:20px;">
+            <input type="checkbox" id="inp-picked" style="width:20px; height:20px;">
+            <label for="inp-picked" style="font-size:13px; font-weight:600;">Chit Picked?</label>
+        </div>
+        <button class="primary-btn" onclick="savePayment()">✓ Save & Generate Invoice</button>
+        <button class="secondary-btn" style="width:100%" onclick="closeModal('payModal')">Cancel</button>
     </div>
-    
-    <input type="number" id="inp-bal" class="form-input" style="color:var(--accent); font-weight:700;" placeholder="Balance" readonly>
-
-    <div style="display:flex; align-items:center; gap:10px; background:var(--surface2); padding:15px; border-radius:12px; margin-bottom:20px;">
-        <input type="checkbox" id="inp-picked" style="width:20px; height:20px;">
-        <label for="inp-picked" style="font-size:13px; font-weight:600;">Chit Picked?</label>
+    <div id="success-view" style="display:none; text-align:center;">
+        <div style="font-size:50px; margin-bottom:10px;">✅</div>
+        <a href="#" id="whatsapp-link" class="wa-btn" target="_blank">💬 Send via WhatsApp</a>
+        <button class="secondary-btn" style="width:100%" onclick="window.print()">🖨️ Print Receipt</button>
+        <button class="secondary-btn" style="width:100%" onclick="location.reload()">Done</button>
     </div>
-    <div id="picked-lock-msg" style="display:none; color:var(--red); font-size:10px; font-weight:700; margin-top:-15px; margin-bottom:15px; text-align:center;">⚠️ MEMBER ALREADY TOOK A CHIT IN THIS GROUP.</div>
-    
-    <button class="form-input" style="background:var(--gold); border:none; color:#000; font-weight:800;" onclick="savePayment()">✓ Save Record</button>
-    <button class="form-input" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); margin-top:5px;" onclick="closeModal('payModal')">Cancel</button>
   </div>
 </div>
 
+<div class="modal-overlay" id="addMemberModal">
+    <div class="modal">
+        <div style="font-size:18px; font-weight:800; margin-bottom:20px;">➕ New Member Enrollment</div>
+        <input type="text" id="nm-name" class="form-input" placeholder="Member Full Name">
+        <select id="nm-group" class="form-input"></select>
+        <input type="tel" id="nm-phone" class="form-input" placeholder="Mobile Number (WhatsApp)">
+        <button class="primary-btn" onclick="addMemberAction()">Enroll Member</button>
+        <button class="secondary-btn" style="width:100%" onclick="closeModal('addMemberModal')">Cancel</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="addGroupModal">
+    <div class="modal">
+        <div style="font-size:18px; font-weight:800; margin-bottom:20px;">🏦 Create New Group</div>
+        <input type="text" id="ng-name" class="form-input" placeholder="Group Name (e.g. Group A)">
+        <button class="primary-btn" onclick="addGroupAction()">Create Group</button>
+        <button class="secondary-btn" style="width:100%" onclick="closeModal('addGroupModal')">Cancel</button>
+    </div>
+</div>
+
+<div id="invoice-view" style="display:none; font-family:monospace;">
+    <center><h2>AK CHIT FUNDS RECEIPT</h2><hr></center>
+    <p><b>Date:</b> <span id="inv-date"></span></p>
+    <p><b>Member:</b> <span id="inv-member"></span></p>
+    <p><b>Group:</b> <span id="inv-group"></span></p>
+    <hr>
+    <p><b>Chit Value:</b> ₹<span id="inv-chitval"></span></p>
+    <p><b>Paid:</b> ₹<span id="inv-paid"></span></p>
+    <p><b>Balance:</b> ₹<span id="inv-bal"></span></p>
+    <center><hr><p>Thank you!</p></center>
+</div>
+
 <nav class="bottom-nav">
+  <div class="quick-add-bar">
+    <div class="quick-btn member" onclick="openModal('addMemberModal')">➕ New Member</div>
+    <div class="quick-btn group" onclick="openModal('addGroupModal')">🏦 New Group</div>
+  </div>
   <div class="bottom-nav-btns">
     <div class="nav-item active" onclick="navigate('home', this)"><span style="font-size:18px;">🏠</span><span class="nav-label">Home</span></div>
     <div class="nav-item" onclick="navigate('groups', this)"><span style="font-size:18px;">📂</span><span class="nav-label">Groups</span></div>
@@ -126,7 +167,7 @@ const SB_URL='https://fxmulysdirqrkixdqusg.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4bXVseXNkaXJxcmtpeGRxdXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDEzMTMsImV4cCI6MjA4NzQxNzMxM30.Vlptcq0oI5-oA4CtpshjqAvG_yEM-t1TuXfKXpfxgf4';
 const H={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
 
-let members=[], payments=[], groups=[], currentSelName='';
+let members=[], payments=[], groups=[], currentName='', currentPhone='';
 
 async function init(){
   try {
@@ -139,121 +180,113 @@ async function init(){
     
     document.getElementById('st-members').textContent = members.length;
     document.getElementById('st-groups').textContent = groups.length;
-    
     const today = new Date().toISOString().split('T')[0];
-    const todayCollection = payments
-        .filter(p => p.paid_on && p.paid_on.split('T')[0] === today)
-        .reduce((s, p) => s + (p.amount_paid || 0), 0);
-    document.getElementById('st-payments').textContent = `₹${(todayCollection/1000).toFixed(1)}K`;
+    const todayT = payments.filter(p => p.paid_on.startsWith(today)).reduce((s, p) => s + (p.amount_paid || 0), 0);
+    document.getElementById('st-payments').textContent = `₹${(todayT/1000).toFixed(1)}K`;
     
     const uniqueNames = [...new Set(members.map(m => m.name))].sort();
     const mSel = document.getElementById('homeMemberSelect');
-    mSel.innerHTML = '<option value="">-- Select Member --</option>';
     uniqueNames.forEach(n => mSel.innerHTML += `<option value="${n}">${n}</option>`);
+
+    const nmG = document.getElementById('nm-group');
+    nmG.innerHTML = '<option value="">-- Assign Group --</option>';
+    groups.forEach(g => nmG.innerHTML += `<option value="${g.name}">${g.name}</option>`);
+    
     renderGroupSummary();
   } catch(e) { console.error(e); }
 }
 
-function navigate(p, el) {
-  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-  document.getElementById('page-'+p).classList.add('active');
-  el.classList.add('active');
-}
-
-// UPDATED MEMBER HISTORY WITH BALANCE COLUMN
 function onHomeMemberChange() {
-    const name = document.getElementById('homeMemberSelect').value;
+    const n = document.getElementById('homeMemberSelect').value;
     const panel = document.getElementById('memberPanel');
-    if(!name) { panel.innerHTML = ''; return; }
-    const mRecords = members.filter(m => m.name === name);
-    const mPays = payments.filter(p => mRecords.some(r => r.id === p.member_id));
+    if(!n) { panel.innerHTML = ''; return; }
+    const mRecs = members.filter(m => m.name === n);
+    const mPays = payments.filter(p => mRecs.some(r => r.id === p.member_id));
     panel.innerHTML = `
         <div class="card" style="margin-top:15px;">
-            <div style="font-size:16px; font-weight:800; margin-bottom:12px;">${name} History</div>
+            <div style="font-size:16px; font-weight:800; margin-bottom:12px;">${n} History</div>
             <div class="table-wrap">
                 <table><thead><tr><th>Group</th><th>Date</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead>
-                <tbody>${mPays.map(p => `<tr><td><b>${p.group_name}</b></td><td>${new Date(p.paid_on).toLocaleDateString()}</td><td>₹${p.amount_paid}</td><td style="color:var(--accent)">₹${p.balance_amt || 0}</td><td>${p.chit_picked==='Yes' ? '<span class="picked-badge">CHIT PICKED</span>' : 'Monthly'}</td></tr>`).join('')}</tbody>
+                <tbody>${mPays.map(p => `<tr><td><b>${p.group_name}</b></td><td>${new Date(p.paid_on).toLocaleDateString()}</td><td>₹${p.amount_paid}</td><td style="color:var(--accent)">₹${p.balance_amt}</td><td>${p.chit_picked==='Yes' ? '<span class="picked-badge">PICKED</span>' : 'Monthly'}</td></tr>`).join('')}</tbody>
                 </table>
             </div>
         </div>`;
 }
 
-function renderGroupSummary() {
-    const container = document.getElementById('groupReportContainer');
-    container.innerHTML = groups.map(g => {
-        const gMembers = members.filter(m => m.group_name === g.name);
-        const gPays = payments.filter(p => p.group_name === g.name);
-        const total = gPays.reduce((s,p) => s + (p.amount_paid || 0), 0);
-        return `<div class="card" onclick="toggleGroup('${g.id}')">
-            <div style="display:flex; justify-content:space-between; align-items:center;"><div style="font-weight:800;">📂 ${g.name}</div><div style="color:var(--green); font-weight:800;">₹${total.toLocaleString()}</div></div>
-            <div id="g-agg-${g.id}" style="display:none; margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
-                <div class="table-wrap">
-                    <table><thead><tr><th>Member</th><th>Paid</th><th>Status</th></tr></thead>
-                    <tbody>${gMembers.map(m => {
-                        const mPaid = gPays.filter(p => p.member_id === m.id).reduce((s,p) => s+(p.amount_paid||0), 0);
-                        const isPicked = gPays.some(p => p.member_id === m.id && p.chit_picked === 'Yes');
-                        return `<tr><td>${m.name}</td><td>₹${mPaid.toLocaleString()}</td><td>${isPicked ? '✅' : '-'}</td></tr>`;
-                    }).join('')}</tbody></table>
-                </div>
-            </div>
-        </div>`;
-    }).join('');
-}
-function toggleGroup(id){ const el = document.getElementById('g-agg-'+id); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
-
 function doSearch(){
   const q = document.getElementById('search-input').value.toLowerCase();
   const names = [...new Set(members.map(m => m.name))].filter(n => n.toLowerCase().includes(q));
   document.getElementById('search-results').style.display='block';
-  document.getElementById('search-results').innerHTML = names.map(n => `<div class="search-item" onclick="selectSearch('${n.replace(/'/g,"")}')" style="padding:12px; border-bottom:1px solid var(--border);">${n}</div>`).join('');
+  document.getElementById('search-results').innerHTML = names.map(n => `<div class="search-item" onclick="selectS('${n.replace(/'/g,"")}')" style="padding:12px; border-bottom:1px solid var(--border);">${n}</div>`).join('');
 }
 function showResults(){ document.getElementById('search-results').style.display='block'; doSearch(); }
-function selectSearch(n){
-  currentSelName = n;
+function selectS(n){
+  currentName = n;
   document.getElementById('search-input').value = n;
   const gsel = document.getElementById('member-group');
   gsel.disabled = false; gsel.innerHTML = '';
-  members.filter(m => m.name === n).forEach(m => {
-    const opt = document.createElement('option'); opt.value = m.group_name; opt.textContent = m.group_name;
-    gsel.appendChild(opt);
-  });
+  const match = members.filter(m => m.name === n);
+  currentPhone = match[0]?.phone || '';
+  match.forEach(m => gsel.innerHTML += `<option value="${m.group_name}">${m.group_name}</option>`);
   document.getElementById('search-results').style.display = 'none';
   checkGroupHistory();
 }
-
 function checkGroupHistory() {
-    const groupName = document.getElementById('member-group').value;
-    const mRecords = members.filter(m => m.name === currentSelName && m.group_name === groupName);
-    const hasPicked = payments.some(p => mRecords.some(r => r.id === p.member_id) && p.group_name === groupName && p.chit_picked === 'Yes');
-    const pickedChk = document.getElementById('inp-picked');
-    const lockMsg = document.getElementById('picked-lock-msg');
-    if(hasPicked) { pickedChk.checked = false; pickedChk.disabled = true; lockMsg.style.display = 'block'; } 
-    else { pickedChk.disabled = false; lockMsg.style.display = 'none'; }
+    const g = document.getElementById('member-group').value;
+    const picked = payments.some(p => p.name === currentName && p.group_name === g && p.chit_picked === 'Yes');
+    document.getElementById('inp-picked').disabled = picked;
+    if(picked) document.getElementById('inp-picked').checked = false;
 }
-
-function calcBal(){
-    const v = parseFloat(document.getElementById('inp-chitval').value)||0;
-    const p = parseFloat(document.getElementById('inp-paid').value)||0;
-    document.getElementById('inp-bal').value = Math.max(0, v - p);
-}
+function calcBal(){ const v = parseFloat(document.getElementById('inp-chitval').value)||0; const p = parseFloat(document.getElementById('inp-paid').value)||0; document.getElementById('inp-bal').value = Math.max(0, v - p); }
 
 async function savePayment(){
-    const name = document.getElementById('search-input').value;
-    const group = document.getElementById('member-group').value;
-    const m = members.find(x => x.name === name && x.group_name === group);
-    if(!m) return alert("Select member and group");
-    const data = { 
-        member_id: m.id, group_name: group, 
-        chit_value: parseFloat(document.getElementById('inp-chitval').value)||0,
-        amount_paid: parseFloat(document.getElementById('inp-paid').value)||0,
-        balance_amt: parseFloat(document.getElementById('inp-bal').value)||0,
-        chit_picked: document.getElementById('inp-picked').checked ? 'Yes' : 'No',
-        paid_on: new Date().toISOString() 
-    };
-    await fetch(`${SB_URL}/rest/v1/payments`, { method:'POST', headers:H, body:JSON.stringify(data) });
-    alert("Record Saved!"); location.reload();
+    const n = document.getElementById('search-input').value;
+    const g = document.getElementById('member-group').value;
+    const m = members.find(x => x.name === n && x.group_name === g);
+    if(!m) return alert("Error selecting member");
+    const data = { member_id: m.id, name: n, group_name: g, chit_value: parseFloat(document.getElementById('inp-chitval').value), amount_paid: parseFloat(document.getElementById('inp-paid').value), balance_amt: parseFloat(document.getElementById('inp-bal').value), chit_picked: document.getElementById('inp-picked').checked ? 'Yes' : 'No', paid_on: new Date().toISOString() };
+    const res = await fetch(`${SB_URL}/rest/v1/payments`, { method:'POST', headers:{...H, 'Prefer':'return=representation'}, body:JSON.stringify(data) });
+    if(res.ok){
+        const saved = await res.json();
+        const msg = `*AK CHIT FUNDS - RECEIPT*%0A*Member:* ${n}%0A*Group:* ${g}%0A*Paid:* ₹${data.amount_paid}%0A*Balance:* ₹${data.balance_amt}`;
+        document.getElementById('whatsapp-link').href = `https://wa.me/91${currentPhone}?text=${msg}`;
+        document.getElementById('inv-date').textContent = new Date().toLocaleDateString();
+        document.getElementById('inv-member').textContent = n;
+        document.getElementById('inv-group').textContent = g;
+        document.getElementById('inv-chitval').textContent = data.chit_value;
+        document.getElementById('inv-paid').textContent = data.amount_paid;
+        document.getElementById('inv-bal').textContent = data.balance_amt;
+        document.getElementById('payment-form').style.display = 'none';
+        document.getElementById('success-view').style.display = 'block';
+    }
 }
+
+async function addMemberAction() {
+    const d = { name: document.getElementById('nm-name').value, group_name: document.getElementById('nm-group').value, phone: document.getElementById('nm-phone').value };
+    await fetch(`${SB_URL}/rest/v1/members`, { method:'POST', headers:H, body:JSON.stringify(d) });
+    alert("Member Enrolled!"); location.reload();
+}
+async function addGroupAction() {
+    await fetch(`${SB_URL}/rest/v1/groups`, { method:'POST', headers:H, body:JSON.stringify({name: document.getElementById('ng-name').value}) });
+    alert("Group Created!"); location.reload();
+}
+
+function renderGroupSummary() {
+    const c = document.getElementById('groupReportContainer');
+    c.innerHTML = groups.map(g => {
+        const m = members.filter(x => x.group_name === g.name);
+        const p = payments.filter(x => x.group_name === g.name);
+        return `<div class="card" onclick="this.querySelector('.details').style.display='block'">
+            <div style="display:flex; justify-content:space-between;"><b>📂 ${g.name}</b><span style="color:var(--green)">₹${p.reduce((s,x)=>s+(x.amount_paid||0),0).toLocaleString()}</span></div>
+            <div class="details" style="display:none; margin-top:10px; border-top:1px solid var(--border); padding-top:10px;">
+                <div class="table-wrap"><table><thead><tr><th>Member</th><th>Paid</th><th>Status</th></tr></thead>
+                <tbody>${m.map(x => `<tr><td>${x.name}</td><td>₹${p.filter(v=>v.member_id===x.id).reduce((s,v)=>s+(v.amount_paid||0),0)}</td><td>${p.some(v=>v.member_id===x.id && v.chit_picked==='Yes')?'Picked':'-'}</td></tr>`).join('')}</tbody></table></div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function navigate(p, el) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); el.classList.add('active'); }
 function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 init();
