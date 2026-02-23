@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AK Chit Funds - Group Analytics</title>
+<title>AK Chit Funds - Multi-Group Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -24,7 +24,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .content{padding:20px 20px 180px;}
 
-/* CARDS & STATS */
+/* CARDS */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;}
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
 .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;}
@@ -74,7 +74,7 @@ td{padding:10px; border-bottom:1px solid var(--border);}
     <button class="primary-btn" onclick="openModal('payModal')" style="margin-bottom:20px; background:linear-gradient(135deg,#f59e0b,#d97706);">💳 New Payment</button>
 
     <div class="card">
-        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:10px; font-weight:700;">MEMBER CONSOLIDATED SUMMARY</label>
+        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:10px; font-weight:700;">CONSOLIDATED MEMBER VIEW</label>
         <select id="homeMemberSelect" class="primary-btn" style="background:var(--surface2); color:var(--text); text-align:left; font-weight:400;" onchange="onHomeMemberChange()">
             <option value="">-- Select Member --</option>
         </select>
@@ -110,7 +110,7 @@ td{padding:10px; border-bottom:1px solid var(--border);}
 <div class="modal-overlay" id="payModal">
   <div class="modal">
     <div style="font-size:18px; font-weight:800; margin-bottom:20px;">New Payment</div>
-    <input type="text" id="search-input" class="form-input" placeholder="Search Member Name..." oninput="doSearch()" onfocus="showResults()">
+    <input type="text" id="search-input" class="form-input" placeholder="Search Member..." oninput="doSearch()" onfocus="showResults()">
     <div id="search-results" style="display:none; background:var(--surface2); border:1px solid var(--border); border-radius:12px; margin-bottom:12px; max-height:150px; overflow-y:auto;"></div>
     <select id="member-group" class="form-input" disabled></select>
     <input type="number" id="inp-paid" class="form-input" placeholder="Amount Paid (₹)">
@@ -124,7 +124,6 @@ td{padding:10px; border-bottom:1px solid var(--border);}
         <div style="font-size:18px; font-weight:800; margin-bottom:20px;">➕ Add Member</div>
         <input type="text" id="nm-name" class="form-input" placeholder="Full Name">
         <select id="nm-group" class="form-input"></select>
-        <input type="tel" id="nm-phone" class="form-input" placeholder="Phone Number">
         <button class="primary-btn" onclick="addMember()">Save Member</button>
         <button class="secondary-btn" onclick="closeModal('addMemberModal')">Cancel</button>
     </div>
@@ -194,35 +193,29 @@ function navigate(p, el) {
   el.classList.add('active');
 }
 
-// MEMBER SUMMARY
+// CONSOLIDATED MEMBER SUMMARY WITH GROUP NAME COLUMN
 function onHomeMemberChange() {
     const name = document.getElementById('homeMemberSelect').value;
     const panel = document.getElementById('memberPanel');
     if(!name) { panel.innerHTML = ''; return; }
+    
+    // Aggregate payments across all groups for this member name
     const mRecords = members.filter(m => m.name === name);
     const mPays = payments.filter(p => mRecords.some(r => r.id === p.member_id));
-    const grouped = {};
-    mPays.forEach(p => {
-        if(!grouped[p.group_name]) grouped[p.group_name] = [];
-        grouped[p.group_name].push(p);
-    });
-    let html = `<div style="font-size:18px; font-weight:800; margin-top:15px; margin-bottom:10px;">${name} Summary</div>`;
-    Object.entries(grouped).forEach(([grp, pays]) => {
-        html += `
-            <div class="card" style="border-left:4px solid var(--accent);">
-                <div style="font-weight:800; font-size:14px; margin-bottom:8px;">GROUP: ${grp}</div>
-                <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>Date</th><th>Paid</th><th>Picked</th></tr></thead>
-                        <tbody>${pays.map(x => `<tr><td>${new Date(x.paid_on).toLocaleDateString()}</td><td>₹${x.amount_paid}</td><td>${x.chit_picked}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>
-            </div>`;
-    });
-    panel.innerHTML = html;
+    
+    panel.innerHTML = `
+        <div class="card" style="margin-top:15px;">
+            <div style="font-size:18px; font-weight:800; margin-bottom:12px;">${name} - All History</div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Group</th><th>Date</th><th>Paid</th><th>Picked</th></tr></thead>
+                    <tbody>${mPays.map(p => `<tr><td><b>${p.group_name}</b></td><td>${new Date(p.paid_on).toLocaleDateString()}</td><td>₹${p.amount_paid}</td><td>${p.chit_picked}</td></tr>`).join('') || '<tr><td colspan="4">No history</td></tr>'}</tbody>
+                </table>
+            </div>
+        </div>`;
 }
 
-// GROUP SUMMARY EXPANDABLE LOGIC
+// GROUP SUMMARY CLICK EXPAND
 function renderGroupReport() {
     const container = document.getElementById('groupReportContainer');
     container.innerHTML = groups.map(g => {
@@ -237,7 +230,6 @@ function renderGroupReport() {
                     <div style="color:var(--green); font-weight:700;">₹${collected.toLocaleString()}</div>
                 </div>
                 <div id="group-detail-${g.id}" style="display:none; margin-top:15px; padding-top:10px; border-top:1px solid var(--border);">
-                    <div style="font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">Member Summary</div>
                     <div class="table-wrap">
                         <table>
                             <thead><tr><th>Member</th><th>Total Paid</th><th>Picked?</th></tr></thead>
@@ -245,7 +237,7 @@ function renderGroupReport() {
                                 const mTotal = gPays.filter(p => p.member_id === m.id).reduce((s,p) => s + (p.amount_paid||0), 0);
                                 const picked = gPays.some(p => p.member_id === m.id && p.chit_picked === 'Yes') ? '✅ Yes' : 'No';
                                 return `<tr><td>${m.name}</td><td>₹${mTotal.toLocaleString()}</td><td>${picked}</td></tr>`;
-                            }).join('') || '<tr><td colspan="3">No members enrolled</td></tr>'}</tbody>
+                            }).join('') || '<tr><td colspan="3">No members</td></tr>'}</tbody>
                         </table>
                     </div>
                 </div>
@@ -258,6 +250,7 @@ function toggleGroup(id) {
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
+// SEARCH DROPDOWN FOR PAYMENTS
 function doSearch(){
   const q = document.getElementById('search-input').value.toLowerCase();
   const names = [...new Set(members.map(m => m.name))].filter(n => n.toLowerCase().includes(q));
@@ -278,19 +271,16 @@ function selectSearch(n){
 async function addMember() {
     const name = document.getElementById('nm-name').value;
     const group = document.getElementById('nm-group').value;
-    const phone = document.getElementById('nm-phone').value;
     if(!name || !group) return alert("Fill required fields");
-    await fetch(`${SB_URL}/rest/v1/members`, { method:'POST', headers:H, body:JSON.stringify({name, group_name: group, phone}) });
+    await fetch(`${SB_URL}/rest/v1/members`, { method:'POST', headers:H, body:JSON.stringify({name, group_name: group}) });
     alert("Member Added!"); location.reload();
 }
-
 async function addGroup() {
     const name = document.getElementById('ng-name').value;
     if(!name) return alert("Enter group name");
     await fetch(`${SB_URL}/rest/v1/groups`, { method:'POST', headers:H, body:JSON.stringify({name}) });
     alert("Group Created!"); location.reload();
 }
-
 async function savePayment() {
     const name = document.getElementById('search-input').value;
     const group = document.getElementById('member-group').value;
