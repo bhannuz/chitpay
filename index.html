@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AK Chit Funds - Admin Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>AK Chit Funds - Full Admin Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#0a0f1e;--surface:#111827;--surface2:#1a2235;
@@ -16,32 +17,34 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden;}
 
-/* TOPBAR & NAV */
+/* UI STRUCTURE */
 .topbar{position:sticky;top:0;z-index:100;background:rgba(10,15,30,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
 .brand-name{font-size:17px;font-weight:800;background:var(--gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page{display:none;animation:fadeUp .3s ease;}
+.page.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.content{padding:20px 20px 170px;}
+
+/* DASHBOARD COMPONENTS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;}
+.stat-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;}
+.pay-big-btn{width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:18px;padding:18px;color:#000;font-weight:800;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:15px;}
+
+/* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(17,24,39,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
 .bottom-nav-btns{display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
 .nav-label{font-size:10px;font-weight:500;color:var(--muted);}
 .nav-item.active .nav-label{color:var(--accent);}
 
-/* LAYOUT */
-.content{padding:20px 20px 140px;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;}
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
-.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;}
-.stat-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;}
-
-/* BUTTONS */
-.pay-big-btn{width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:18px;padding:18px;color:#000;font-weight:800;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:15px;}
-.primary-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;color:#000;font-weight:800;cursor:pointer;font-family:inherit;}
-.secondary-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:13px;color:var(--text);margin-top:10px;cursor:pointer;font-family:inherit;}
-.wa-btn{background:#25D366; color:#fff; padding:12px; border-radius:12px; text-decoration:none; display:block; font-size:13px; text-align:center; margin-top:10px; font-weight:700;}
-
 /* MODALS */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:200;display:none;align-items:flex-end;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--surface);border-radius:24px 24px 0 0;width:100%;padding:24px;max-height:90vh;overflow-y:auto;border-top:1px solid var(--border);}
+.primary-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;color:#000;font-weight:800;cursor:pointer;font-family:inherit;}
+.secondary-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:13px;color:var(--text);margin-top:10px;cursor:pointer;}
 
 /* SEARCH */
 #search-results{display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--accent);border-radius:12px;z-index:1000;max-height:200px;overflow-y:auto;margin-top:5px;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
@@ -55,32 +58,72 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 
 <div class="topbar">
   <div class="brand-name">🏆 AK Chit Funds</div>
-  <div style="font-size:10px; color:var(--green)">● Master Dependent Mode</div>
+  <div style="font-size:10px; color:var(--green)">● Full Master Admin</div>
 </div>
 
-<div class="content" id="main-content">
-  <div style="margin-bottom:16px;">
-    <div style="font-size:13px;color:var(--muted);">Welcome back 👋</div>
-    <div style="font-size:22px;font-weight:800;margin-top:2px;">Bhanu Prasad</div>
-  </div>
-
-  <div class="stats-row">
-    <div class="stat-box"><div class="stat-val" id="st-members">0</div><div style="font-size:9px;color:var(--muted)">Members</div></div>
-    <div class="stat-box"><div class="stat-val" id="st-groups">0</div><div style="font-size:9px;color:var(--muted)">Groups</div></div>
-    <div class="stat-box"><div class="stat-val" id="st-payments" style="color:var(--green)">₹0</div><div style="font-size:9px;color:var(--muted)">Collected</div></div>
-  </div>
-
-  <button class="pay-big-btn" onclick="openPayModal()">
-    <div style="background:rgba(0,0,0,0.1); padding:10px; border-radius:12px;">💳</div>
-    <div style="text-align:left;">
-      <div style="font-size:16px;">New Payment</div>
-      <div style="font-size:11px; opacity:0.7;">Record dependent master entry</div>
+<div class="page active" id="page-home">
+  <div class="content">
+    <div style="margin-bottom:16px;">
+      <div style="font-size:13px;color:var(--muted);">Welcome back 👋</div>
+      <div style="font-size:22px;font-weight:800;margin-top:2px;">Bhanu Prasad</div>
     </div>
-  </button>
 
-  <div class="card">
-    <div style="font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:12px; font-weight:700;">🚨 Defaulters List</div>
-    <div id="defaulter-list" style="font-size:13px;">Syncing data...</div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-val" id="st-members">0</div><div style="font-size:9px;color:var(--muted)">Members</div></div>
+      <div class="stat-box"><div class="stat-val" id="st-groups">0</div><div style="font-size:9px;color:var(--muted)">Groups</div></div>
+      <div class="stat-box"><div class="stat-val" id="st-payments" style="color:var(--green)">₹0</div><div style="font-size:9px;color:var(--muted)">Collected</div></div>
+    </div>
+
+    <button class="pay-big-btn" onclick="openPayModal()">
+      <div style="background:rgba(0,0,0,0.1); padding:10px; border-radius:12px;">💳</div>
+      <div style="text-align:left;">
+        <div style="font-size:16px;">New Payment</div>
+        <div style="font-size:11px; opacity:0.7;">Dependent member entry</div>
+      </div>
+    </button>
+
+    <div class="card">
+        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:10px; font-weight:700; text-transform:uppercase;">View Member Summary</label>
+        <select id="homeMemberSelect" class="primary-btn" style="background:var(--surface2); color:var(--text); text-align:left; font-weight:400;" onchange="onHomeMemberChange()">
+            <option value="">-- Select Member --</option>
+        </select>
+    </div>
+    <div id="memberPanel" style="display:none;"></div>
+  </div>
+</div>
+
+<div class="page" id="page-groups">
+  <div class="content">
+    <div style="font-size:22px;font-weight:800;margin-bottom:20px;">Group Reports</div>
+    <div id="groupReportContainer"></div>
+  </div>
+</div>
+
+<div class="page" id="page-import">
+    <div class="content">
+      <div style="font-size:22px;font-weight:800;margin-bottom:10px;">Excel Import</div>
+      <button class="secondary-btn" onclick="downloadTemplate()" style="width:100%; margin-bottom:15px;">📥 Download Template</button>
+      <div class="card" style="border:2px dashed var(--accent); text-align:center; padding:40px 20px;">
+          <input type="file" id="excelFile" accept=".xlsx,.xls" onchange="handleFileUpload(this)" style="display:none;">
+          <label for="excelFile" style="cursor:pointer;">
+              <div style="font-size:40px; margin-bottom:10px;">📂</div>
+              <div style="font-weight:700; color:var(--accent);">Tap to Upload Excel</div>
+          </label>
+      </div>
+      <div id="previewSection" style="display:none; margin-top:20px;">
+          <div id="previewCount" style="margin-bottom:10px; font-size:13px;"></div>
+          <button class="primary-btn" onclick="executeImport()">🚀 Start Import</button>
+      </div>
+    </div>
+</div>
+
+<div class="page" id="page-report">
+  <div class="content">
+    <div style="font-size:22px;font-weight:800;margin-bottom:20px;">Analytics</div>
+    <div class="card">
+        <div style="font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:12px; font-weight:700;">🚨 Defaulters List</div>
+        <div id="defaulter-list" style="font-size:13px;">Syncing...</div>
+    </div>
   </div>
 </div>
 
@@ -91,13 +134,13 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
       
       <div style="margin-bottom:16px; position:relative;">
         <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight:700;">SEARCH MEMBER NAME</label>
-        <input type="text" id="search-input" style="width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; color:var(--text); outline:none;" placeholder="Start typing..." autocomplete="off" oninput="doSearch()" onfocus="showResults()">
+        <input type="text" id="search-input" style="width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; color:var(--text); outline:none;" placeholder="Type to search..." autocomplete="off" oninput="doSearch()" onfocus="showResults()">
         <input type="hidden" id="selected-id"><input type="hidden" id="selected-phone">
         <div id="search-results"></div>
       </div>
 
       <div style="margin-bottom:16px;">
-        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight:700;">GROUP NAME (LOCKED TO MASTER)</label>
+        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight:700;">GROUP (DEPENDENT DATA)</label>
         <select id="member-group" style="width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; color:var(--text);" disabled>
           <option value="">Select member first</option>
         </select>
@@ -112,7 +155,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
         <input type="checkbox" id="inp-picked" style="width:20px; height:20px;">
         <label for="inp-picked" style="font-size:13px; font-weight:600;">Chit Picked this month?</label>
       </div>
-      <div id="picked-warning" style="display:none; color:var(--red); font-size:11px; margin-bottom:15px; margin-top:-10px;">⚠️ Member already picked chit. Disabled.</div>
+      <div id="picked-warning" style="display:none; color:var(--red); font-size:11px; margin-bottom:15px; margin-top:-10px;">⚠️ Member already picked chit. Locked.</div>
 
       <button class="primary-btn" id="save-btn" onclick="save()">Save & Finalize</button>
       <button class="secondary-btn" onclick="closeModal()">Cancel</button>
@@ -130,9 +173,10 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 
 <nav class="bottom-nav">
   <div class="bottom-nav-btns">
-    <div class="nav-item active"><span style="font-size:20px;">🏠</span><span class="nav-label">Home</span></div>
-    <div class="nav-item" onclick="alert('Feature coming soon')"><span style="font-size:20px;">📂</span><span class="nav-label">Groups</span></div>
-    <div class="nav-item" onclick="alert('Feature coming soon')"><span style="font-size:20px;">📊</span><span class="nav-label">Reports</span></div>
+    <div class="nav-item active" onclick="navigate('home', this)"><span style="font-size:20px;">🏠</span><span class="nav-label">Home</span></div>
+    <div class="nav-item" onclick="navigate('groups', this)"><span style="font-size:20px;">📂</span><span class="nav-label">Groups</span></div>
+    <div class="nav-item" onclick="navigate('import', this)"><span style="font-size:20px;">📥</span><span class="nav-label">Import</span></div>
+    <div class="nav-item" onclick="navigate('report', this)"><span style="font-size:20px;">📊</span><span class="nav-label">Reports</span></div>
   </div>
 </nav>
 
@@ -153,34 +197,73 @@ const SB_URL='https://fxmulysdirqrkixdqusg.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4bXVseXNkaXJxcmtpeGRxdXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDEzMTMsImV4cCI6MjA4NzQxNzMxM30.Vlptcq0oI5-oA4CtpshjqAvG_yEM-t1TuXfKXpfxgf4';
 const H={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
 
-let members=[], payments=[];
+let members=[], payments=[], groups=[], parsedData=[];
 
 async function init(){
   try {
     const [rm, rp, rg] = await Promise.all([
       fetch(`${SB_URL}/rest/v1/members?select=*`,{headers:H}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/payments?select=*`,{headers:H}).then(r=>r.json()),
-      fetch(`${SB_URL}/rest/v1/groups?select=count`,{headers:H}).then(r=>r.json())
+      fetch(`${SB_URL}/rest/v1/groups?select=*`,{headers:H}).then(r=>r.json())
     ]);
-    members=rm; payments=rp;
+    members=rm; payments=rp; groups=rg;
     document.getElementById('st-members').textContent=members.length;
-    document.getElementById('st-groups').textContent=rg[0]?.count || 0;
+    document.getElementById('st-groups').textContent=groups.length;
     const total = payments.reduce((s, p) => s + (p.amount_paid || 0), 0);
     document.getElementById('st-payments').textContent = `₹${(total/1000).toFixed(1)}K`;
+    
+    // Populate dropdowns
+    const mSel = document.getElementById('homeMemberSelect');
+    members.forEach(m => mSel.innerHTML += `<option value="${m.id}">${m.name}</option>`);
+    
     renderDefs();
+    renderGroupReport();
   } catch(e) { console.error(e); }
 }
 
-function renderDefs(){
-  const bal = {};
-  payments.forEach(p => bal[p.member_id] = (bal[p.member_id] || 0) + (p.balance_amt || 0));
-  const defs = members.filter(m => bal[m.id] > 0);
-  document.getElementById('defaulter-list').innerHTML = defs.map(m => `
-    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
-      <span>${m.name}</span><span style="color:var(--red); font-weight:800;">₹${bal[m.id].toLocaleString()}</span>
-    </div>`).join('') || "No pending balances.";
+function navigate(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  el.classList.add('active');
 }
 
+// MEMBER SUMMARY LOGIC
+function onHomeMemberChange() {
+    const id = document.getElementById('homeMemberSelect').value;
+    const panel = document.getElementById('memberPanel');
+    if(!id) { panel.style.display = 'none'; return; }
+    const m = members.find(x => x.id === id);
+    const mPays = payments.filter(p => p.member_id === id);
+    const totalPaid = mPays.reduce((s,p) => s + (p.amount_paid || 0), 0);
+    const totalBal = mPays.reduce((s,p) => s + (p.balance_amt || 0), 0);
+    
+    panel.style.display = 'block';
+    panel.innerHTML = `
+        <div class="card" style="background:var(--surface2); border-color:var(--accent);">
+            <div style="font-weight:800; font-size:16px;">${m.name}</div>
+            <div style="font-size:12px; color:var(--muted); margin-bottom:12px;">Group: ${m.group_name}</div>
+            <div style="display:flex; justify-content:space-between; font-size:13px;">
+                <span>Total Paid: <b style="color:var(--green)">₹${totalPaid.toLocaleString()}</b></span>
+                <span>Balance: <b style="color:var(--red)">₹${totalBal.toLocaleString()}</b></span>
+            </div>
+        </div>`;
+}
+
+// GROUP REPORT LOGIC
+function renderGroupReport() {
+    const container = document.getElementById('groupReportContainer');
+    container.innerHTML = groups.map(g => {
+        const gPays = payments.filter(p => p.group_name === g.name);
+        const collected = gPays.reduce((s,p) => s + (p.amount_paid || 0), 0);
+        return `<div class="card">
+            <div style="font-weight:800;">📂 ${g.name}</div>
+            <div style="font-size:12px; color:var(--muted);">Total Collection: ₹${collected.toLocaleString()}</div>
+        </div>`;
+    }).join('');
+}
+
+// NEW PAYMENT LOGIC
 function showResults(){ document.getElementById('search-results').style.display='block'; doSearch(); }
 function doSearch(){
   const q = document.getElementById('search-input').value.toLowerCase();
@@ -209,7 +292,7 @@ function select(id, name, group, phone, picked){
 
 function calc(){
   const p = parseFloat(document.getElementById('inp-paid').value)||0;
-  document.getElementById('inp-bal').value = Math.max(0, 20000 - p); // Assuming 20k default, can adjust
+  document.getElementById('inp-bal').value = Math.max(0, 20000 - p); // Balance based on monthly chit value
 }
 
 async function save(){
@@ -237,6 +320,39 @@ async function save(){
     document.getElementById('pay-form-container').style.display='none';
     document.getElementById('post-save').style.display='block';
   }
+}
+
+// IMPORT LOGIC
+function handleFileUpload(input) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        parsedData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+        document.getElementById('previewSection').style.display = 'block';
+        document.getElementById('previewCount').textContent = `✅ Ready to import ${parsedData.length} members.`;
+    };
+    reader.readAsArrayBuffer(input.files[0]);
+}
+
+async function executeImport() {
+    for(let m of parsedData) {
+        await fetch(`${SB_URL}/rest/v1/members`, {
+            method:'POST', headers:H, body:JSON.stringify({name: m.name, group_name: m.group, phone: m.phone})
+        });
+    }
+    alert("Import Complete!");
+    location.reload();
+}
+
+function renderDefs(){
+  const bal = {};
+  payments.forEach(p => bal[p.member_id] = (bal[p.member_id] || 0) + (p.balance_amt || 0));
+  const defs = members.filter(m => bal[m.id] > 0);
+  document.getElementById('defaulter-list').innerHTML = defs.map(m => `
+    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
+      <span>${m.name}</span><span style="color:var(--red); font-weight:800;">₹${bal[m.id].toLocaleString()}</span>
+    </div>`).join('') || "No pending balances.";
 }
 
 function openPayModal(){ document.getElementById('payModal').classList.add('open'); }
