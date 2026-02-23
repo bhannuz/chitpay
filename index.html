@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AK Chit Funds - Full Admin Pro</title>
+<title>AK Chit Funds - Multi-Group Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -15,9 +15,8 @@
   --green:#10b981;--red:#ef4444;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-width:430px;margin:0 auto;min-height:100vh;}
 
-/* UI COMPONENTS */
 .topbar{position:sticky;top:0;z-index:100;background:rgba(10,15,30,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
 .brand-name{font-size:17px;font-weight:800;background:var(--gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .page{display:none;animation:fadeUp .3s ease;}
@@ -30,15 +29,12 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;}
 .stat-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;}
 
-/* BUTTONS */
 .primary-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;color:#000;font-weight:800;cursor:pointer;font-family:inherit;}
-.secondary-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:13px;color:var(--text);margin-top:10px;cursor:pointer;font-family:inherit;}
+.secondary-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:13px;color:var(--text);margin-top:10px;cursor:pointer;}
 
-/* SEARCH RESULTS */
-#search-results{display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--accent);border-radius:12px;z-index:1000;max-height:200px;overflow-y:auto;margin-top:5px;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
-.search-item{padding:12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+#search-results{display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--accent);border-radius:12px;z-index:1000;max-height:200px;overflow-y:auto;margin-top:5px;}
+.search-item{padding:12px;border-bottom:1px solid var(--border);cursor:pointer;}
 
-/* BOTTOM NAV & QUICK ADD */
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(17,24,39,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
 .quick-add-bar{display:flex;gap:8px;padding:8px 12px;background:rgba(10,15,30,0.95);border-bottom:1px solid var(--border);}
 .quick-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;}
@@ -49,13 +45,11 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 .nav-label{font-size:10px;font-weight:500;color:var(--muted);}
 .nav-item.active .nav-label{color:var(--accent);}
 
-/* TABLES */
 .table-wrap{overflow-x:auto; margin-top:10px; border-radius:12px; border:1px solid var(--border);}
 table{width:100%; border-collapse:collapse; font-size:11px; text-align:left;}
 th{background:var(--surface2); padding:10px; color:var(--muted); text-transform:uppercase; font-size:9px;}
 td{padding:10px; border-bottom:1px solid var(--border);}
 
-/* MODALS */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:200;display:none;align-items:flex-end;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--surface);border-radius:24px 24px 0 0;width:100%;padding:24px;max-height:90vh;overflow-y:auto;border-top:1px solid var(--border);}
@@ -65,7 +59,7 @@ td{padding:10px; border-bottom:1px solid var(--border);}
 
 <div class="topbar">
   <div class="brand-name">🏆 AK Chit Funds</div>
-  <div style="font-size:10px; color:var(--green)">● Admin Pro Mode</div>
+  <div style="font-size:10px; color:var(--green)">● Multi-Group Mode</div>
 </div>
 
 <div class="page active" id="page-home">
@@ -121,17 +115,14 @@ td{padding:10px; border-bottom:1px solid var(--border);}
     <div style="font-size:18px; font-weight:800; margin-bottom:20px;">Record Payment</div>
     <div style="margin-bottom:16px; position:relative;">
       <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight:700;">SEARCH NAME</label>
-      <input type="text" id="search-input" class="form-input" placeholder="Start typing..." autocomplete="off" oninput="doSearch()" onfocus="showResults()">
+      <input type="text" id="search-input" class="form-input" style="width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; color:var(--text); outline:none;" placeholder="Start typing..." autocomplete="off" oninput="doSearch()" onfocus="showResults()">
       <div id="search-results"></div>
     </div>
     <div style="margin-bottom:16px;">
-        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight:700;">GROUP (LOCKED)</label>
-        <select id="member-group" class="form-input" disabled></select>
+        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight:700;">GROUP (SELECT FROM ASSIGNED)</label>
+        <select id="member-group" style="width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; color:var(--text);" disabled></select>
     </div>
-    <div class="form-group">
-        <label class="form-label">PAID AMOUNT (₹)</label>
-        <input type="number" id="inp-paid" class="form-input" placeholder="Enter amount">
-    </div>
+    <input type="number" id="inp-paid" style="width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; color:var(--text); margin-bottom:12px;" placeholder="Amount Paid (₹)">
     <button class="primary-btn" onclick="save()">✓ Save Record</button>
     <button class="secondary-btn" onclick="closeModal('payModal')">Cancel</button>
   </div>
@@ -140,9 +131,9 @@ td{padding:10px; border-bottom:1px solid var(--border);}
 <div class="modal-overlay" id="addMemberModal">
     <div class="modal">
         <div style="font-size:18px; font-weight:800; margin-bottom:20px;">➕ New Member</div>
-        <input type="text" id="nm-name" class="form-input" placeholder="Full Name" style="margin-bottom:12px;">
-        <select id="nm-group" class="form-input" style="margin-bottom:12px;"></select>
-        <input type="tel" id="nm-phone" class="form-input" placeholder="Phone Number" style="margin-bottom:12px;">
+        <input type="text" id="nm-name" style="width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; color:var(--text); margin-bottom:12px;" placeholder="Full Name">
+        <select id="nm-group" style="width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; color:var(--text); margin-bottom:12px;"></select>
+        <input type="tel" id="nm-phone" style="width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; color:var(--text); margin-bottom:12px;" placeholder="Phone Number">
         <button class="primary-btn" onclick="addMember()">Add Member</button>
         <button class="secondary-btn" onclick="closeModal('addMemberModal')">Cancel</button>
     </div>
@@ -151,9 +142,7 @@ td{padding:10px; border-bottom:1px solid var(--border);}
 <div class="modal-overlay" id="addGroupModal">
     <div class="modal">
         <div style="font-size:18px; font-weight:800; margin-bottom:20px;">🏦 New Group</div>
-        <input type="text" id="ng-name" class="form-input" placeholder="Group Name" style="margin-bottom:12px;">
-        <input type="number" id="ng-months" class="form-input" placeholder="Total Months (e.g. 21)" style="margin-bottom:12px;">
-        <input type="date" id="ng-date" class="form-input" style="margin-bottom:12px;">
+        <input type="text" id="ng-name" style="width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; color:var(--text); margin-bottom:12px;" placeholder="Group Name">
         <button class="primary-btn" onclick="addGroup()">Create Group</button>
         <button class="secondary-btn" onclick="closeModal('addGroupModal')">Cancel</button>
     </div>
@@ -187,16 +176,20 @@ async function init(){
       fetch(`${SB_URL}/rest/v1/groups?select=*`,{headers:H}).then(r=>r.json())
     ]);
     members=rm; payments=rp; groups=rg;
-    document.getElementById('st-members').textContent=members.length;
-    document.getElementById('st-groups').textContent=groups.length;
+    
+    // UI STATS
+    const uniqueMembers = [...new Set(members.map(m => m.name))];
+    document.getElementById('st-members').textContent = uniqueMembers.length;
+    document.getElementById('st-groups').textContent = groups.length;
     const total = payments.reduce((s, p) => s + (p.amount_paid || 0), 0);
     document.getElementById('st-payments').textContent = `₹${(total/1000).toFixed(1)}K`;
     
-    // Populate dropdowns
+    // POPULATE UNIQUE MEMBER NAMES FOR HOME DROPDOWN
     const mSel = document.getElementById('homeMemberSelect');
     mSel.innerHTML = '<option value="">-- Select Member --</option>';
-    members.forEach(m => mSel.innerHTML += `<option value="${m.id}">${m.name}</option>`);
+    uniqueMembers.sort().forEach(name => mSel.innerHTML += `<option value="${name}">${name}</option>`);
 
+    // POPULATE GROUPS FOR NEW MEMBER
     const gSel = document.getElementById('nm-group');
     gSel.innerHTML = '<option value="">-- Select Group --</option>';
     groups.forEach(g => gSel.innerHTML += `<option value="${g.name}">${g.name}</option>`);
@@ -213,93 +206,81 @@ function navigate(page, el) {
   el.classList.add('active');
 }
 
-// MEMBER SUMMARY (FULL COLUMNS)
+// MULTI-GROUP SUMMARY LOGIC
 function onHomeMemberChange() {
-    const id = document.getElementById('homeMemberSelect').value;
+    const name = document.getElementById('homeMemberSelect').value;
     const panel = document.getElementById('memberPanel');
-    if(!id) { panel.innerHTML = ''; return; }
-    const m = members.find(x => x.id === id);
-    const mPays = payments.filter(p => p.member_id === id);
+    if(!name) { panel.innerHTML = ''; return; }
     
-    panel.innerHTML = `
-        <div class="card">
-            <div style="font-weight:800; font-size:16px;">${m.name}</div>
-            <div style="font-size:11px; color:var(--muted); margin-bottom:10px;">GROUP: ${m.group_name} | PHONE: ${m.phone}</div>
-            <div class="table-wrap">
-                <table>
-                    <thead><tr><th>Date</th><th>Paid</th><th>Bal</th><th>Picked</th></tr></thead>
-                    <tbody>${mPays.map(p => `<tr><td>${new Date(p.paid_on).toLocaleDateString()}</td><td>₹${p.amount_paid}</td><td>₹${p.balance_amt || 0}</td><td>${p.chit_picked}</td></tr>`).join('') || '<tr><td colspan="4">No history</td></tr>'}</tbody>
-                </table>
-            </div>
-        </div>`;
-}
+    // Find all IDs associated with this name
+    const memberRecords = members.filter(m => m.name === name);
+    const mPays = payments.filter(p => memberRecords.some(r => r.id === p.member_id));
+    
+    // Group payments by Group Name
+    const groupedByGroup = {};
+    mPays.forEach(p => {
+        if(!groupedByGroup[p.group_name]) groupedByGroup[p.group_name] = [];
+        groupedByGroup[p.group_name].push(p);
+    });
 
-// GROUP SUMMARY CLICK
-function renderGroupReport() {
-    const container = document.getElementById('groupReportContainer');
-    container.innerHTML = groups.map(g => {
-        const gPays = payments.filter(p => p.group_name === g.name);
-        const collected = gPays.reduce((s,p) => s + (p.amount_paid || 0), 0);
-        return `
-            <div class="card" onclick="toggleGroupDetails('${g.id}')">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-weight:800;">📂 ${g.name}</div>
-                    <div style="color:var(--green); font-weight:700;">₹${collected.toLocaleString()}</div>
-                </div>
-                <div id="details-${g.id}" style="display:none; margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
-                    <div style="font-size:11px; color:var(--muted); margin-bottom:8px;">MONTHS: ${g.total_months} | START: ${g.start_date || 'N/A'}</div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead><tr><th>Member</th><th>Paid</th><th>Status</th></tr></thead>
-                            <tbody>${gPays.slice(-5).map(p => `<tr><td>${p.name || 'Member'}</td><td>₹${p.amount_paid}</td><td>${p.chit_picked}</td></tr>`).join('')}</tbody>
-                        </table>
-                    </div>
+    let summaryHtml = `<div style="font-size:20px; font-weight:800; margin-bottom:10px;">${name}</div>`;
+    
+    Object.entries(groupedByGroup).forEach(([grp, pays]) => {
+        const totalPaid = pays.reduce((s,p) => s + (p.amount_paid || 0), 0);
+        summaryHtml += `
+            <div class="card" style="border-left: 4px solid var(--accent);">
+                <div style="font-weight:800; font-size:14px; margin-bottom:5px;">GROUP: ${grp}</div>
+                <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">Collection: ₹${totalPaid.toLocaleString()}</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Date</th><th>Paid</th><th>Picked</th></tr></thead>
+                        <tbody>${pays.map(p => `<tr><td>${new Date(p.paid_on).toLocaleDateString()}</td><td>₹${p.amount_paid}</td><td>${p.chit_picked}</td></tr>`).join('')}</tbody>
+                    </table>
                 </div>
             </div>`;
-    }).join('');
-}
+    });
 
-function toggleGroupDetails(id) {
-    const el = document.getElementById('details-'+id);
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    panel.innerHTML = summaryHtml || '<div class="card">No payment history found.</div>';
 }
 
 function doSearch(){
   const q = document.getElementById('search-input').value.toLowerCase();
   const container = document.getElementById('search-results');
-  const filtered = members.filter(m => m.name.toLowerCase().includes(q));
-  container.innerHTML = filtered.map(m => `<div class="search-item" onclick="select('${m.id}','${m.name}','${m.group_name}')">${m.name} <small>${m.group_name}</small></div>`).join('');
+  const uniqueNames = [...new Set(members.map(m => m.name))];
+  const filtered = uniqueNames.filter(n => n.toLowerCase().includes(q));
+  container.innerHTML = filtered.map(n => `<div class="search-item" onclick="selectMemberSearch('${n.replace(/'/g,"")}')">${n}</div>`).join('');
 }
+
 function showResults(){ document.getElementById('search-results').style.display='block'; doSearch(); }
-function select(id, name, group){
-  selId=id;
+
+function selectMemberSearch(name){
   document.getElementById('search-input').value = name;
   const gsel = document.getElementById('member-group');
-  gsel.innerHTML = `<option value="${group}">${group}</option>`;
+  gsel.disabled = false;
+  gsel.innerHTML = ''; 
+  
+  // Find all groups assigned to this name
+  const assignedGroups = members.filter(m => m.name === name).map(m => m.group_name);
+  assignedGroups.forEach(g => {
+    const opt = document.createElement('option');
+    opt.value = g;
+    opt.textContent = g;
+    gsel.appendChild(opt);
+  });
+  
   document.getElementById('search-results').style.display = 'none';
 }
 
-async function addMember() {
-    const name = document.getElementById('nm-name').value;
-    const group = document.getElementById('nm-group').value;
-    const phone = document.getElementById('nm-phone').value;
-    await fetch(`${SB_URL}/rest/v1/members`, { method:'POST', headers:H, body:JSON.stringify({name, group_name: group, phone}) });
-    alert("Member Added!"); location.reload();
-}
-
-async function addGroup() {
-    const name = document.getElementById('ng-name').value;
-    const months = document.getElementById('ng-months').value;
-    const date = document.getElementById('ng-date').value;
-    await fetch(`${SB_URL}/rest/v1/groups`, { method:'POST', headers:H, body:JSON.stringify({name, total_months: months, start_date: date}) });
-    alert("Group Created!"); location.reload();
-}
-
 async function save(){
-  if(!selId) return alert("Select member");
+  const name = document.getElementById('search-input').value;
+  const group = document.getElementById('member-group').value;
+  const mRecord = members.find(m => m.name === name && m.group_name === group);
+  
+  if(!mRecord) return alert("Select member and group correctly");
+  
   const data = {
-    member_id: selId,
-    group_name: document.getElementById('member-group').value,
+    member_id: mRecord.id,
+    group_name: group,
     amount_paid: parseFloat(document.getElementById('inp-paid').value) || 0,
     paid_on: new Date().toISOString()
   };
@@ -307,12 +288,24 @@ async function save(){
   alert("Saved!"); location.reload();
 }
 
+function renderGroupReport() {
+    const container = document.getElementById('groupReportContainer');
+    container.innerHTML = groups.map(g => {
+        const gPays = payments.filter(p => p.group_name === g.name);
+        const collected = gPays.reduce((s,p) => s + (p.amount_paid || 0), 0);
+        return `<div class="card">
+            <div style="font-weight:800;">📂 ${g.name}</div>
+            <div style="color:var(--green); font-weight:700;">₹${collected.toLocaleString()}</div>
+        </div>`;
+    }).join('');
+}
+
 function renderDefaulters(){
   const container = document.getElementById('defaulter-list');
   const bal = {};
   payments.forEach(p => bal[p.member_id] = (bal[p.member_id] || 0) + (p.balance_amt || 0));
   const defs = members.filter(m => bal[m.id] > 0);
-  container.innerHTML = defs.map(m => `<div class="card" style="display:flex; justify-content:space-between;"><span>${m.name}</span><span style="color:var(--red); font-weight:800;">₹${bal[m.id]}</span></div>`).join('') || '<div class="card">No defaulters</div>';
+  container.innerHTML = defs.map(m => `<div class="card" style="display:flex; justify-content:space-between;"><span>${m.name}</span><span style="color:var(--red); font-weight:800;">₹${bal[m.id]}</span></div>`).join('');
 }
 
 function openModal(id){ document.getElementById(id).classList.add('open'); }
