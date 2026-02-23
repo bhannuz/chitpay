@@ -16,7 +16,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden;}
 
-/* UI STRUCTURE */
+/* NAVIGATION */
 .topbar{position:sticky;top:0;z-index:100;background:rgba(10,15,30,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
 .brand-name{font-size:17px;font-weight:800;background:var(--gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .page{display:none;animation:fadeUp .3s ease;}
@@ -73,7 +73,7 @@ td{padding:10px; border-bottom:1px solid var(--border);}
     <button class="form-input" onclick="openModal('payModal')" style="height:55px; background:linear-gradient(135deg,#f59e0b,#d97706); border:none; color:#000; font-weight:800; cursor:pointer;">💳 New Payment</button>
 
     <div class="card">
-        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:10px; font-weight:700;">CONSOLIDATED MEMBER SUMMARY</label>
+        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:10px; font-weight:700;">MEMBER CONSOLIDATED SUMMARY</label>
         <select id="homeMemberSelect" class="form-input" onchange="onHomeMemberChange()" style="margin-bottom:0;">
             <option value="">-- Select Member --</option>
         </select>
@@ -107,7 +107,7 @@ td{padding:10px; border-bottom:1px solid var(--border);}
         <input type="checkbox" id="inp-picked" style="width:20px; height:20px;">
         <label for="inp-picked" style="font-size:13px; font-weight:600;">Chit Picked?</label>
     </div>
-    <div id="picked-lock-msg" style="display:none; color:var(--red); font-size:10px; font-weight:700; margin-top:-15px; margin-bottom:15px; text-align:center;">⚠️ MEMBER HAS ALREADY TAKEN A CHIT IN THIS GROUP.</div>
+    <div id="picked-lock-msg" style="display:none; color:var(--red); font-size:10px; font-weight:700; margin-top:-15px; margin-bottom:15px; text-align:center;">⚠️ MEMBER ALREADY TOOK A CHIT IN THIS GROUP.</div>
     
     <button class="form-input" style="background:var(--gold); border:none; color:#000; font-weight:800;" onclick="savePayment()">✓ Save Record</button>
     <button class="form-input" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); margin-top:5px;" onclick="closeModal('payModal')">Cancel</button>
@@ -137,7 +137,6 @@ async function init(){
     ]);
     members=rm; payments=rp; groups=rg;
     
-    // UPDATED STATS LOGIC
     document.getElementById('st-members').textContent = members.length;
     document.getElementById('st-groups').textContent = groups.length;
     
@@ -162,6 +161,7 @@ function navigate(p, el) {
   el.classList.add('active');
 }
 
+// UPDATED MEMBER HISTORY WITH BALANCE COLUMN
 function onHomeMemberChange() {
     const name = document.getElementById('homeMemberSelect').value;
     const panel = document.getElementById('memberPanel');
@@ -172,8 +172,8 @@ function onHomeMemberChange() {
         <div class="card" style="margin-top:15px;">
             <div style="font-size:16px; font-weight:800; margin-bottom:12px;">${name} History</div>
             <div class="table-wrap">
-                <table><thead><tr><th>Group</th><th>Date</th><th>Paid</th><th>Status</th></tr></thead>
-                <tbody>${mPays.map(p => `<tr><td><b>${p.group_name}</b></td><td>${new Date(p.paid_on).toLocaleDateString()}</td><td>₹${p.amount_paid}</td><td>${p.chit_picked==='Yes' ? '<span class="picked-badge">CHIT PICKED</span>' : 'Monthly'}</td></tr>`).join('')}</tbody>
+                <table><thead><tr><th>Group</th><th>Date</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead>
+                <tbody>${mPays.map(p => `<tr><td><b>${p.group_name}</b></td><td>${new Date(p.paid_on).toLocaleDateString()}</td><td>₹${p.amount_paid}</td><td style="color:var(--accent)">₹${p.balance_amt || 0}</td><td>${p.chit_picked==='Yes' ? '<span class="picked-badge">CHIT PICKED</span>' : 'Monthly'}</td></tr>`).join('')}</tbody>
                 </table>
             </div>
         </div>`;
