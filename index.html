@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AK Chit Funds - Master Portal</title>
+<title>AK Chit Funds - Dependent Master Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -40,4 +40,86 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 .modal{background:var(--surface);width:100%;border-radius:24px 24px 0 0;padding:24px;max-height:90vh;overflow-y:auto;}
 
 @media print {
-    body *
+    body * { visibility: hidden; }
+    #invoice-print, #invoice-print * { visibility: visible; }
+    #invoice-print { position: absolute; left: 0; top: 0; width: 100%; color: #000; background: #fff; padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="brand">AK CHIT FUNDS</div>
+    <div style="font-size:10px; color:var(--green);" id="status">● Master Dependent Mode</div>
+</div>
+
+<div class="content">
+    <div class="card">
+        <div class="section-title">Overview</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+            <div><small style="color:var(--muted)">Members</small><div id="count-m" style="font-size:20px;font-weight:800;">0</div></div>
+            <div><small style="color:var(--muted)">Collections</small><div id="total-p" style="font-size:16px;font-weight:800;color:var(--green);">₹0</div></div>
+        </div>
+    </div>
+
+    <button class="primary-btn" onclick="openModal()">💳 Record New Payment</button>
+
+    <div class="card" style="margin-top:20px;">
+        <div class="section-title">🚨 Pending Balances</div>
+        <div id="defaulter-list" style="font-size:13px;">Syncing...</div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="payModal">
+    <div class="modal">
+        <div id="payment-form">
+            <div style="font-size:18px; font-weight:800; margin-bottom:20px;">Record Receipt</div>
+            
+            <div class="form-group">
+                <label class="form-label">Search Member Name</label>
+                <input type="text" class="form-input" id="search-input" placeholder="Start typing name..." autocomplete="off" oninput="doSearch()" onfocus="showResults()">
+                <input type="hidden" id="selected-id">
+                <input type="hidden" id="selected-phone">
+                <div id="search-results"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Group Name (Dependent)</label>
+                <select class="form-input" id="member-group" disabled>
+                    <option value="">-- Select Member First --</option>
+                </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div class="form-group"><label class="form-label">Chit Value</label><input type="number" class="form-input" id="inp-val" oninput="calc()"></div>
+                <div class="form-group"><label class="form-label">Paid Amount</label><input type="number" class="form-input" id="inp-paid" oninput="calc()"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Balance Due</label>
+                <input type="number" class="form-input" id="inp-bal" readonly style="color:var(--accent); font-weight:800;">
+            </div>
+
+            <div class="form-group" style="display:flex; align-items:center; gap:10px; background:var(--surface2); padding:12px; border-radius:12px;">
+                <input type="checkbox" id="inp-picked" style="width:20px; height:20px;">
+                <label for="inp-picked" style="font-size:13px; font-weight:600;">Chit Picked this month?</label>
+            </div>
+            <div id="picked-warning" style="display:none; color:var(--red); font-size:11px; margin-bottom:15px; margin-top:-10px;">⚠️ Member already picked chit. Logic Locked.</div>
+
+            <button class="primary-btn" id="save-btn" onclick="save()">Save & Finalize</button>
+            <button class="secondary-btn" onclick="closeModal()">Cancel</button>
+        </div>
+
+        <div id="post-save" style="display:none; text-align:center;">
+            <div style="font-size:40px; margin-bottom:10px;">✅</div>
+            <h3 style="margin-bottom:20px;">Saved Successfully</h3>
+            <a href="#" id="wa-link" class="wa-btn" target="_blank">💬 Send WhatsApp Receipt</a>
+            <button class="secondary-btn" style="width:100%" onclick="window.print()">🖨️ Print Receipt</button>
+            <button class="secondary-btn" style="width:100%" onclick="location.reload()">Done</button>
+        </div>
+    </div>
+</div>
+
+<div id="invoice-print" style="display:none; font-family:monospace; color:#000;">
+    <center><h3>AK CHIT FUNDS RECEIPT</h3><hr></center>
+    <p><b>Date:</b> <span id="inv-date">
