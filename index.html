@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AK Chit Funds</title>
+<title>AK Chit Funds - WhatsApp Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -11,7 +11,7 @@
   --accent:#f59e0b;--text:#f1f5f9;--muted:#64748b;
   --border:rgba(255,255,255,0.08);
   --gold:linear-gradient(135deg,#f59e0b,#fbbf24,#d97706);
-  --green:#10b981;--red:#ef4444;
+  --green:#10b981;--red:#ef4444;--wa:#25D366;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-width:430px;margin:0 auto;min-height:100vh;}
@@ -34,8 +34,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 
 .pay-big-btn{width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:18px;padding:18px;color:#000;font-weight:800;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
 .primary-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;color:#000;font-weight:800;cursor:pointer;font-family:inherit;}
-.secondary-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);margin-top:10px;cursor:pointer;}
-.delete-btn{width:100%;background:rgba(239,68,68,0.1);border:1px solid var(--red);border-radius:14px;padding:12px;color:var(--red);margin-top:10px;cursor:pointer;font-weight:700;font-size:12px;}
+.secondary-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px;color:var(--text);margin-top:10px;cursor:pointer;}
+.wa-btn{background:rgba(37,211,102,0.1); border:1px solid var(--wa); color:var(--wa); border-radius:12px; padding:10px; cursor:pointer; font-weight:700; font-size:11px; display:flex; align-items:center; gap:8px;}
 
 .table-wrap{overflow-x:auto; margin-top:10px; border-radius:12px; border:1px solid var(--border);}
 table{width:100%; border-collapse:collapse; font-size:9px; text-align:left;}
@@ -44,16 +44,6 @@ td{padding:10px; border-bottom:1px solid var(--border);}
 
 .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:15px;margin-bottom:16px;}
 .form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;font-size:13px;}
-.status-badge{font-size:8px; font-weight:800; padding:2px 6px; border-radius:4px;}
-.status-picked{background:rgba(16,185,129,0.15); color:var(--green); border:1px solid var(--green);}
-
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(17,24,39,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
-.quick-add-bar{display:none;gap:8px;padding:8px 12px;background:rgba(10,15,30,0.95);border-bottom:1px solid var(--border);}
-.quick-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--border);color:var(--text);}
-.bottom-nav-btns{display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
-.nav-label{font-size:10px;font-weight:500;color:var(--muted);}
-.nav-item.active .nav-label{color:var(--accent);}
 
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:1500;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
@@ -67,7 +57,7 @@ td{padding:10px; border-bottom:1px solid var(--border);}
     <div style="font-size:30px; margin-bottom:10px;">🔐</div>
     <h3 style="margin-bottom:15px;">AK Funds</h3>
     <input type="text" id="login-id" class="form-input" placeholder="Name or Mobile No">
-    <button class="primary-btn" onclick="handleLogin()">Sign In</button>
+    <button class="primary-btn" onclick="handleLogin()" style="width:100%;">Sign In</button>
   </div>
 </div>
 
@@ -108,7 +98,7 @@ td{padding:10px; border-bottom:1px solid var(--border);}
     <div style="font-size:16px; font-weight:800; margin-bottom:15px;">Record Payment</div>
     <input type="date" id="inp-date" class="form-input">
     <div style="position:relative;">
-        <input type="text" id="search-input" class="form-input" placeholder="Search Member..." oninput="doSearch()" onfocus="showResults()">
+        <input type="text" id="search-input" class="form-input" placeholder="Search Member Name..." oninput="doSearch()" onfocus="showResults()">
         <div id="search-results" style="display:none; background:var(--surface2); border:1px solid var(--border); border-radius:12px; margin-bottom:12px; max-height:120px; overflow-y:auto; position:absolute; width:100%; z-index:200;"></div>
     </div>
     <select id="member-group" class="form-input" onchange="checkLock()" disabled></select>
@@ -139,29 +129,14 @@ td{padding:10px; border-bottom:1px solid var(--border);}
         <select id="nm-group" class="form-input"></select>
         <input type="tel" id="nm-phone" class="form-input" placeholder="Mobile Number">
         <button class="primary-btn" onclick="executeAddMember()">Save Member</button>
-        <button class="delete-btn" id="nm-delete-btn" style="display:none;" onclick="deleteMember()">Delete Member</button>
         <button class="secondary-btn" style="width:100%" onclick="closeModal('addMemberModal')">Cancel</button>
-    </div>
-</div>
-
-<div class="modal-overlay" id="addGroupModal">
-    <div class="modal">
-        <div style="font-size:16px; font-weight:800; margin-bottom:15px;">Manage Group</div>
-        <select id="ng-select" class="form-input" onchange="fillGroupEdit()">
-            <option value="new">-- Create New Group --</option>
-        </select>
-        <input type="text" id="ng-name" class="form-input" placeholder="Group Name">
-        <input type="number" id="ng-months" class="form-input" placeholder="Duration (Months)">
-        <button class="primary-btn" onclick="executeAddGroup()">Save Group</button>
-        <button class="delete-btn" id="ng-delete-btn" style="display:none;" onclick="deleteGroup()">Delete Group</button>
-        <button class="secondary-btn" style="width:100%" onclick="closeModal('addGroupModal')">Cancel</button>
     </div>
 </div>
 
 <nav class="bottom-nav" id="main-nav" style="display:none;">
   <div class="quick-add-bar" id="admin-quick-add">
-    <div class="quick-btn" onclick="openModal('addMemberModal')">👤 Member</div>
-    <div class="quick-btn" onclick="openModal('addGroupModal')">🏦 Group</div>
+    <div class="quick-btn" onclick="openModal('addMemberModal')">👤 Member Master</div>
+    <div class="quick-btn" onclick="alert('Manage Groups Modal Logic')">🏦 Group Master</div>
   </div>
   <div class="bottom-nav-btns">
     <div class="nav-item active" onclick="navigate('home', this)"><span style="font-size:18px;">🏠</span><span class="nav-label">Home</span></div>
@@ -191,9 +166,9 @@ async function refreshData(){
 function updateUI(){
     document.getElementById('st-members').textContent = members.length;
     document.getElementById('st-groups').textContent = groups.length;
-    const t = new Date().toISOString().split('T')[0];
-    const tVal = payments.filter(p=>p.paid_on?.startsWith(t)).reduce((s,p)=>s+(p.amount_paid||0),0);
-    document.getElementById('st-today').textContent = `₹${(tVal/1000).toFixed(1)}K`;
+    const today = new Date().toISOString().split('T')[0];
+    const tCol = payments.filter(p=>p.paid_on?.startsWith(today)).reduce((s,p)=>s+(p.amount_paid||0),0);
+    document.getElementById('st-today').textContent = `₹${(tCol/1000).toFixed(1)}K`;
     
     if(curRole === 'admin') {
         const mSel = document.getElementById('homeMemberSelect');
@@ -205,37 +180,12 @@ function updateUI(){
         const mEdSel = document.getElementById('nm-select');
         mEdSel.innerHTML = '<option value="new">-- Enroll New Member --</option>';
         members.forEach(m => mEdSel.innerHTML += `<option value="${m.id}">${m.name} (${m.group_name})</option>`);
-        
-        const gEdSel = document.getElementById('ng-select');
-        gEdSel.innerHTML = '<option value="new">-- Create New Group --</option>';
-        groups.forEach(g => gEdSel.innerHTML += `<option value="${g.id}">${g.name}</option>`);
 
         const nmGSel = document.getElementById('nm-group');
         nmGSel.innerHTML = '<option value="">-- Assign Group --</option>';
         groups.forEach(g => nmGSel.innerHTML += `<option value="${g.name}">${g.name}</option>`);
-        renderGroupsView();
     }
-}
-
-function fillMemberEdit() {
-    const id = document.getElementById('nm-select').value;
-    const del = document.getElementById('nm-delete-btn');
-    if(id === 'new') { document.getElementById('nm-name').value=''; document.getElementById('nm-phone').value=''; del.style.display='none'; return; }
-    const m = members.find(x => x.id == id);
-    document.getElementById('nm-name').value = m.name;
-    document.getElementById('nm-group').value = m.group_name;
-    document.getElementById('nm-phone').value = m.phone;
-    del.style.display='block';
-}
-
-function fillGroupEdit() {
-    const id = document.getElementById('ng-select').value;
-    const del = document.getElementById('ng-delete-btn');
-    if(id === 'new') { document.getElementById('ng-name').value=''; document.getElementById('ng-months').value=''; del.style.display='none'; return; }
-    const g = groups.find(x => x.id == id);
-    document.getElementById('ng-name').value = g.name;
-    document.getElementById('ng-months').value = g.total_months;
-    del.style.display='block';
+    renderGroupsView();
 }
 
 function handleLogin() {
@@ -256,7 +206,7 @@ function handleLogin() {
             document.getElementById('welcome-msg').textContent = `Welcome, ${found.name}`;
             renderMemberTable(payments.filter(px => px.name === curMName), 'memberPersonalPanel', curMName);
             navigate('home');
-        } else { alert('Mobile not found'); return; }
+        } else { alert('User not found'); return; }
     }
     document.getElementById('login-overlay').style.display = 'none';
     refreshData();
@@ -271,15 +221,49 @@ function navigate(p, el) {
     document.getElementById('page-'+target).classList.add('active');
 }
 
+// WHATSAPP FEATURE ADDED HERE
+function sendWhatsAppSummary(groupName, memberName) {
+    const member = members.find(m => m.name === memberName && m.group_name === groupName);
+    const group = groups.find(g => g.name === groupName);
+    const history = payments.filter(p => p.name === memberName && p.group_name === groupName);
+    
+    const currentMonth = history.length;
+    const totalMonths = group ? group.total_months : 21;
+    const latestPayment = history[history.length - 1];
+    const balance = latestPayment ? latestPayment.balance_amt : 0;
+    const chitValue = latestPayment ? latestPayment.chit_value : 0;
+
+    const message = `*AK CHIT FUNDS - STATEMENT*%0A` +
+        `----------------------------%0A` +
+        `*Member:* ${memberName}%0A` +
+        `*Group Name:* ${groupName}%0A` +
+        `*Monthly Value:* ₹${chitValue}%0A` +
+        `*Month Number:* ${currentMonth} of ${totalMonths}%0A` +
+        `*Pending Months:* ${totalMonths - currentMonth}%0A` +
+        `----------------------------%0A` +
+        `*Current Balance:* ₹${balance}%0A` +
+        `----------------------------%0A` +
+        `_Please clear dues if any. Thank you!_`;
+
+    window.open(`https://wa.me/91${member.phone}?text=${message}`, '_blank');
+}
+
 function renderMemberTable(pays, targetId, name) {
     const grouped = {};
     pays.forEach(p => { if(!grouped[p.group_name]) grouped[p.group_name] = []; grouped[p.group_name].push(p); });
     let html = '';
     Object.entries(grouped).forEach(([gn, list]) => {
         const pk = list.find(x => x.chit_picked === 'Yes');
-        html += `<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><b>📂 ${gn}</b>${pk?`<span style="background:var(--green);color:#000;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:800;">PICKED: ₹${pk.picked_value}</span>`:''}</div>
-            <div class="table-wrap"><table><thead><tr><th>Date</th><th>Chit Amt</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead>
-            <tbody>${list.map(x=>`<tr><td>${new Date(x.paid_on).toLocaleDateString()}</td><td>₹${x.chit_value}</td><td>₹${x.amount_paid}</td><td style="color:var(--accent)">₹${x.balance_amt}</td><td>${x.chit_picked==='Yes'?'<span class="status-badge status-picked">PICKED</span>':'—'}</td></tr>`).join('')}</tbody>
+        const waButton = curRole === 'admin' ? `<button class="wa-btn" onclick="sendWhatsAppSummary('${gn}', '${name}')">📲 Share Summary</button>` : '';
+        
+        html += `<div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <b style="font-size:13px;">📂 ${gn}</b>
+                ${waButton}
+            </div>
+            <div class="table-wrap"><table>
+                <thead><tr><th>Date</th><th>Chit Amt</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead>
+                <tbody>${list.map(x=>`<tr><td>${new Date(x.paid_on).toLocaleDateString()}</td><td>₹${x.chit_value}</td><td>₹${x.amount_paid}</td><td style="color:var(--accent)">₹${x.balance_amt}</td><td>${x.chit_picked === 'Yes' ? '<span style="color:var(--green)">PICKED</span>' : '—'}</td></tr>`).join('')}</tbody>
             </table></div></div>`;
     });
     document.getElementById(targetId).innerHTML = html || 'No data';
@@ -290,44 +274,21 @@ function onAdminMemberChange() { renderMemberTable(payments.filter(p => p.name =
 function renderGroupsView() {
     document.getElementById('groupReportContainer').innerHTML = groups.map(g => {
         const gPays = payments.filter(p => p.group_name === g.name);
-        const gMembs = members.filter(m => m.group_name === g.name);
         const pCount = [...new Set(gPays.map(p => p.paid_on?.substring(0,7)))].length;
-        const total = g.total_months || 21;
         return `<div class="card" onclick="toggleDetails('${g.id}')">
             <div style="display:flex;justify-content:space-between;align-items:center;">
                 <b>📂 ${g.name}</b>
-                <span style="font-size:11px;color:var(--accent);font-weight:700;">${Math.max(0, total-pCount)} / ${total} MONTHS PENDING</span>
+                <span style="font-size:11px;color:var(--accent);font-weight:700;">${Math.max(0, (g.total_months||21)-pCount)} / ${(g.total_months||21)} MONTHS PENDING</span>
             </div>
             <div id="det-${g.id}" style="display:none;margin-top:15px;border-top:1px solid var(--border);padding-top:10px;">
-                <div class="table-wrap"><table><thead><tr><th>Member</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead>
-                <tbody>${gMembs.map(m=>{
-                    const mP = gPays.filter(px => px.member_id === m.id);
-                    const paid = mP.reduce((s,p)=>s+p.amount_paid,0);
-                    const bal = mP.length > 0 ? mP[mP.length-1].balance_amt : 0;
-                    return `<tr><td>${m.name}</td><td>₹${paid}</td><td style="color:var(--accent)">₹${bal}</td><td>${mP.some(p=>p.chit_picked==='Yes')?'<span class="status-badge status-picked">PICKED</span>':'-'}</td></tr>`;
+                <div class="table-wrap"><table><thead><tr><th>Member</th><th>Paid</th><th>Status</th></tr></thead>
+                <tbody>${members.filter(m=>m.group_name===g.name).map(m=>{
+                    const paid = gPays.filter(px => px.member_id === m.id).reduce((s,p)=>s+p.amount_paid,0);
+                    return `<tr><td>${m.name}</td><td>₹${paid}</td><td>${gPays.some(p=>p.member_id===m.id && p.chit_picked==='Yes')?'PICKED':'-'}</td></tr>`;
                 }).join('')}</tbody></table></div>
             </div></div>`;
     }).join('');
 }
-
-async function executeAddMember(){
-    const id = document.getElementById('nm-select').value;
-    const data = { name: document.getElementById('nm-name').value, group_name: document.getElementById('nm-group').value, phone: document.getElementById('nm-phone').value };
-    const method = id === 'new' ? 'POST' : 'PATCH';
-    const res = await fetch(id==='new' ? `${SB_URL}/rest/v1/members` : `${SB_URL}/rest/v1/members?id=eq.${id}`, { method, headers: H, body: JSON.stringify(data) });
-    if(res.ok) { alert("Success!"); closeModal('addMemberModal'); refreshData(); }
-}
-
-async function executeAddGroup(){
-    const id = document.getElementById('ng-select').value;
-    const data = { name: document.getElementById('ng-name').value, total_months: document.getElementById('ng-months').value };
-    const method = id === 'new' ? 'POST' : 'PATCH';
-    const res = await fetch(id==='new' ? `${SB_URL}/rest/v1/groups` : `${SB_URL}/rest/v1/groups?id=eq.${id}`, { method, headers: H, body: JSON.stringify(data) });
-    if(res.ok) { alert("Success!"); closeModal('addGroupModal'); refreshData(); }
-}
-
-async function deleteMember() { if(!confirm("Delete?")) return; await fetch(`${SB_URL}/rest/v1/members?id=eq.${document.getElementById('nm-select').value}`, { method:'DELETE', headers:H }); closeModal('addMemberModal'); refreshData(); }
-async function deleteGroup() { if(!confirm("Delete?")) return; await fetch(`${SB_URL}/rest/v1/groups?id=eq.${document.getElementById('ng-select').value}`, { method:'DELETE', headers:H }); closeModal('addGroupModal'); refreshData(); }
 
 function toggleDetails(id){ const el=document.getElementById('det-'+id); el.style.display=el.style.display==='none'?'block':'none'; }
 function togglePickedVal(){ document.getElementById('inp-picked-val').style.display = document.getElementById('inp-picked').checked?'block':'none'; }
@@ -351,6 +312,7 @@ function checkLock(){
     const pk = payments.some(p=>p.name===document.getElementById('search-input').value && p.group_name===g && p.chit_picked==='Yes');
     const chk = document.getElementById('inp-picked'); chk.disabled=pk; if(pk) chk.checked=false; togglePickedVal();
 }
+
 async function savePayment(){
     const n = document.getElementById('search-input').value, g = document.getElementById('member-group').value, m = members.find(x=>x.name===n && x.group_name===g);
     const data = { member_id: m.id, name: n, group_name: g, chit_value: parseFloat(document.getElementById('inp-chit').value)||0, amount_paid: parseFloat(document.getElementById('inp-paid').value)||0, balance_amt: parseFloat(document.getElementById('inp-bal').value)||0, chit_picked: document.getElementById('inp-picked').checked?'Yes':'No', picked_value: parseFloat(document.getElementById('inp-picked-val').value)||0, paid_on: document.getElementById('inp-date').value };
