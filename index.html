@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AK Chit Funds - Pro Admin</title>
+<title>AK Chit Funds - Final Column Alignment</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -44,6 +44,11 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 .nav-label{font-size:10px;font-weight:500;color:var(--muted);}
 .nav-item.active .nav-label{color:var(--accent);}
 
+.table-wrap{overflow-x:auto; margin-top:10px; border-radius:12px; border:1px solid var(--border);}
+table{width:100%; border-collapse:collapse; font-size:10px; text-align:left;}
+th{background:var(--surface2); padding:10px; color:var(--muted); text-transform:uppercase; font-size:8px;}
+td{padding:10px; border-bottom:1px solid var(--border);}
+
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:1500;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--surface);border-radius:24px;width:100%;max-width:380px;padding:24px;border:1px solid var(--border);}
@@ -52,6 +57,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 #search-results{display:none; position:absolute; width:100%; background:var(--surface2); border:1px solid var(--accent); border-radius:12px; z-index:1600; max-height:120px; overflow-y:auto; margin-top:-5px;}
 .search-item{padding:10px; border-bottom:1px solid var(--border); cursor:pointer;}
 .picked-value-tag{background:var(--green); color:#000; font-size:9px; font-weight:800; padding:2px 6px; border-radius:8px;}
+.picked-tick{color:var(--green); font-weight:800;}
 </style>
 </head>
 <body>
@@ -177,7 +183,7 @@ async function refreshData(){
     ]);
     members=rm; payments=rp; groups=rg;
     updateConsole();
-  } catch(e) { console.error(e); }
+  } catch(e) { console.error("Data Sync Error"); }
 }
 
 function updateConsole(){
@@ -193,7 +199,6 @@ function updateConsole(){
         mSel.innerHTML = '<option value="">-- Select Member --</option>';
         [...new Set(members.map(m=>m.name))].sort().forEach(n => mSel.innerHTML += `<option value="${n}">${n}</option>`);
         mSel.value = cur;
-        
         const nmGSel = document.getElementById('nm-group');
         nmGSel.innerHTML = '<option value="">-- Assign Group --</option>';
         groups.forEach(g => nmGSel.innerHTML += `<option value="${g.name}">${g.name}</option>`);
@@ -224,17 +229,30 @@ function navigate(p, el) {
     if(curRole === 'member' && p === 'home') renderMemberTable(payments.filter(px => px.name === curMName), 'memberPersonalPanel', curMName);
 }
 
+// MEMBER SUMMARY TABLE - CLEANED COLUMNS
 function renderMemberTable(pays, targetId, name) {
     const grouped = {};
     pays.forEach(p => { if(!grouped[p.group_name]) grouped[p.group_name] = []; grouped[p.group_name].push(p); });
-    let html = `<div style="font-size:18px; font-weight:800; margin-bottom:12px;">${name} Summary</div>`;
+    let html = `<div style="font-size:18px; font-weight:800; margin-bottom:12px;">${name}</div>`;
     Object.entries(grouped).forEach(([gn, list]) => {
         const pk = list.find(x => x.chit_picked === 'Yes');
-        html += `<div class="card" style="padding:20px;"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><b>${gn}</b>${pk?`<span class="picked-value-tag">PICKED: ₹${pk.picked_value}</span>`:''}</div>
-        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Paid</th><th>Bal</th></tr></thead>
-        <tbody>${list.map(x=>`<tr><td>${new Date(x.paid_on).toLocaleDateString()}</td><td>₹${x.amount_paid}</td><td style="color:var(--accent)">₹${x.balance_amt}</td></tr>`).join('')}</tbody></table></div></div>`;
+        html += `<div class="card" style="padding:15px; margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <b style="font-size:13px;">📂 ${gn}</b>
+                ${pk?`<span class="picked-value-tag">PICKED: ₹${pk.picked_value}</span>`:''}
+            </div>
+            <div class="table-wrap"><table>
+                <thead><tr><th>Date</th><th>Chit Amt</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead>
+                <tbody>${list.map(x=>`<tr>
+                    <td>${new Date(x.paid_on).toLocaleDateString()}</td>
+                    <td>₹${x.chit_value}</td>
+                    <td>₹${x.amount_paid}</td>
+                    <td style="color:var(--accent)">₹${x.balance_amt}</td>
+                    <td>${x.chit_picked === 'Yes' ? '<span class="picked-tick">✅</span>' : '—'}</td>
+                </tr>`).join('')}</tbody>
+            </table></div></div>`;
     });
-    document.getElementById(targetId).innerHTML = html || 'No data';
+    document.getElementById(targetId).innerHTML = html || 'No data found';
 }
 
 function onAdminMemberChange() {
@@ -248,7 +266,6 @@ function renderGroupsView() {
         const gMembs = members.filter(m => m.group_name === g.name);
         const pCount = [...new Set(gPays.map(p => p.paid_on?.substring(0,7)))].length;
         const total = g.total_months || 21;
-        
         return `<div class="card" onclick="toggleDetails('${g.id}')" style="padding:20px;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
                 <b>📂 ${g.name}</b>
@@ -266,6 +283,7 @@ function renderGroupsView() {
 }
 function toggleDetails(id){ const el=document.getElementById('det-'+id); el.style.display=el.style.display==='none'?'block':'none'; }
 
+// FORM HELPERS
 function togglePickedVal(){ document.getElementById('inp-picked-val').style.display = document.getElementById('inp-picked').checked?'block':'none'; }
 function calcBal(){ const c=parseFloat(document.getElementById('inp-chit').value)||0; const p=parseFloat(document.getElementById('inp-paid').value)||0; document.getElementById('inp-bal').value=Math.max(0,c-p); }
 function doSearch(){
@@ -289,6 +307,7 @@ function checkLock(){
     const chk = document.getElementById('inp-picked'); chk.disabled=pk; if(pk) chk.checked=false; togglePickedVal();
 }
 
+// DATA OPERATIONS
 async function savePayment(){
     const n = document.getElementById('search-input').value;
     const g = document.getElementById('member-group').value;
@@ -306,13 +325,11 @@ async function savePayment(){
     const res = await fetch(`${SB_URL}/rest/v1/payments`,{method:'POST',headers:H,body:JSON.stringify(data)});
     if(res.ok) { alert("Saved!"); closeModal('payModal'); refreshData(); }
 }
-
 async function executeAddMember(){
     const d = { name: document.getElementById('nm-name').value, group_name: document.getElementById('nm-group').value, phone: document.getElementById('nm-phone').value };
     const res = await fetch(`${SB_URL}/rest/v1/members`,{method:'POST',headers:H,body:JSON.stringify(d)});
     if(res.ok) { alert("Enrolled!"); closeModal('addMemberModal'); refreshData(); }
 }
-
 async function executeAddGroup(){
     const d = { name: document.getElementById('ng-name').value, total_months: document.getElementById('ng-months').value };
     const res = await fetch(`${SB_URL}/rest/v1/groups`,{method:'POST',headers:H,body:JSON.stringify(d)});
