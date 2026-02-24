@@ -21,16 +21,15 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 #login-overlay{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:30px;}
 .login-card{background:var(--surface);border-radius:24px;padding:30px;width:100%;border:1px solid var(--border);text-align:center;}
 
-/* TOPBAR */
+/* NAVIGATION */
 .topbar{position:sticky;top:0;z-index:100;background:rgba(10,15,30,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
 .brand-name{font-size:17px;font-weight:800;background:var(--gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-
 .page{display:none;animation:fadeUp .3s ease;}
 .page.active{display:block;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .content{padding:20px 20px 180px;}
 
-/* CONSOLE / STATS */
+/* DASHBOARD STATS */
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
 .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;}
 .stat-val{font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;}
@@ -39,6 +38,10 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 .pay-big-btn{width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:18px;padding:18px;color:#000;font-weight:800;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:15px;}
 .primary-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;color:#000;font-weight:800;cursor:pointer;font-family:inherit;}
 .secondary-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:13px;color:var(--text);margin-top:10px;cursor:pointer;}
+
+/* SEARCH RESULTS */
+#search-results{display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--accent);border-radius:12px;z-index:1000;max-height:150px;overflow-y:auto;margin-top:5px;}
+.search-item{padding:12px;border-bottom:1px solid var(--border);cursor:pointer;}
 
 /* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(17,24,39,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
@@ -51,17 +54,17 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 .nav-label{font-size:10px;font-weight:500;color:var(--muted);}
 .nav-item.active .nav-label{color:var(--accent);}
 
-/* MODALS */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border-radius:24px;width:100%;max-width:380px;padding:24px;border:1px solid var(--border);}
-.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-family:inherit;outline:none;margin-bottom:12px;font-size:13px;}
-
 /* TABLES */
 .table-wrap{overflow-x:auto; margin-top:10px; border-radius:12px; border:1px solid var(--border);}
 table{width:100%; border-collapse:collapse; font-size:11px; text-align:left;}
 th{background:var(--surface2); padding:10px; color:var(--muted); text-transform:uppercase; font-size:9px;}
 td{padding:10px; border-bottom:1px solid var(--border);}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:24px;width:100%;max-width:380px;padding:24px;border:1px solid var(--border);}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;font-size:13px;}
 </style>
 </head>
 <body>
@@ -69,7 +72,7 @@ td{padding:10px; border-bottom:1px solid var(--border);}
 <div id="login-overlay">
   <div class="login-card">
     <div style="font-size:40px; margin-bottom:10px;">🔐</div>
-    <h2 style="margin-bottom:20px;">Portal Login</h2>
+    <h2 style="margin-bottom:20px;">AK Chit Funds Login</h2>
     <input type="text" id="login-id" class="form-input" placeholder="Admin Name or Mobile No">
     <button class="primary-btn" onclick="handleLogin()">Sign In</button>
   </div>
@@ -112,7 +115,7 @@ td{padding:10px; border-bottom:1px solid var(--border);}
 
 <div class="page" id="page-groups">
   <div class="content">
-    <div style="font-size:22px;font-weight:800;margin-bottom:20px;">Group Aggregates</div>
+    <div style="font-size:22px;font-weight:800;margin-bottom:20px;">Group Management</div>
     <div id="groupReportContainer"></div>
   </div>
 </div>
@@ -195,7 +198,7 @@ async function init(){
     gSel.innerHTML = '<option value="">-- Assign Group --</option>';
     groups.forEach(g => gSel.innerHTML += `<option value="${g.name}">${g.name}</option>`);
     
-    renderGroupAggregates();
+    renderGroupDeepSummary();
   } catch(e) { console.error(e); }
 }
 
@@ -221,6 +224,47 @@ function navigate(p, el) {
     document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
     const target = curRole === 'admin' && p === 'home' ? 'admin-home' : (curRole === 'member' && p === 'home' ? 'member-home' : p);
     document.getElementById('page-'+target).classList.add('active');
+    if(p === 'groups') renderGroupDeepSummary();
+}
+
+function renderGroupDeepSummary() {
+    const container = document.getElementById('groupReportContainer');
+    container.innerHTML = groups.map(g => {
+        const groupMembers = members.filter(m => m.group_name === g.name);
+        const groupPayments = payments.filter(p => p.group_name === g.name);
+        const uniqueMonthsCount = [...new Set(groupPayments.map(p => p.paid_on.substring(0,7)))].length;
+        const totalMonths = g.total_months || 21;
+        const pendingMonths = Math.max(0, totalMonths - uniqueMonthsCount);
+
+        return `
+            <div style="background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px; margin-bottom:16px; cursor:pointer;" onclick="toggleDetails('${g.id}')">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><b style="font-size:16px;">📂 ${g.name}</b></div>
+                    <div style="color:var(--accent); font-weight:700; font-size:11px;">${pendingMonths} / ${totalMonths} PENDING</div>
+                </div>
+                <div id="details-${g.id}" style="display:none; margin-top:15px; border-top:1px solid var(--border); padding-top:12px;">
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Member</th><th>Total Paid</th><th>Balance</th><th>Picked</th></tr></thead>
+                            <tbody>
+                                ${groupMembers.map(m => {
+                                    const mPays = groupPayments.filter(p => p.member_id === m.id);
+                                    const totalPaid = mPays.reduce((s,p) => s + (p.amount_paid||0), 0);
+                                    const latestBal = mPays[mPays.length-1]?.balance_amt || 0;
+                                    const isPicked = mPays.some(p => p.chit_picked === 'Yes') ? '✅' : '-';
+                                    return `<tr><td>${m.name}</td><td>₹${totalPaid.toLocaleString()}</td><td style="color:var(--red)">₹${latestBal}</td><td>${isPicked}</td></tr>`;
+                                }).join('') || '<tr><td colspan="4">No members</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function toggleDetails(id) {
+    const el = document.getElementById('details-'+id);
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
 function showMemberPersonalDashboard(name) {
@@ -237,7 +281,7 @@ function onAdminMemberChange() {
 function renderSummaryTable(pays, targetId, name) {
     const grouped = {};
     pays.forEach(p => { if(!grouped[p.group_name]) grouped[p.group_name] = []; grouped[p.group_name].push(p); });
-    let html = `<div style="font-size:18px; font-weight:800; margin-bottom:12px;">${name}</div>`;
+    let html = `<div style="font-size:18px; font-weight:800; margin-bottom:12px;">${name} Summary</div>`;
     Object.entries(grouped).forEach(([grp, list]) => {
         html += `<div style="background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px; margin-bottom:16px;">
             <div style="font-weight:800; font-size:14px; margin-bottom:8px;">GROUP: ${grp}</div>
@@ -246,16 +290,6 @@ function renderSummaryTable(pays, targetId, name) {
             </table></div></div>`;
     });
     document.getElementById(targetId).innerHTML = html || 'No history found.';
-}
-
-function renderGroupAggregates() {
-    document.getElementById('groupReportContainer').innerHTML = groups.map(g => {
-        const pCount = [...new Set(payments.filter(p=>p.group_name===g.name).map(p=>p.paid_on.substring(0,7)))].length;
-        return `<div style="background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
-            <div><b>📂 ${g.name}</b></div>
-            <div style="color:var(--accent); font-weight:700; font-size:12px;">${Math.max(0, (g.total_months||21)-pCount)} / ${g.total_months||21} Months Pending</div>
-        </div>`;
-    }).join('');
 }
 
 function calcBal(){ const c=parseFloat(document.getElementById('inp-chit').value)||0; const p=parseFloat(document.getElementById('inp-paid').value)||0; document.getElementById('inp-bal').value=Math.max(0,c-p); }
@@ -275,7 +309,9 @@ function selectS(n){
 function checkLock(){
     const g=document.getElementById('member-group').value;
     const picked=payments.some(p=>p.name===curMName && p.group_name===g && p.chit_picked==='Yes');
-    document.getElementById('inp-picked').disabled=picked;
+    const chk = document.getElementById('inp-picked');
+    chk.disabled = picked;
+    if(picked) chk.checked = false;
 }
 async function savePayment(){
     const m = members.find(x=>x.name===document.getElementById('search-input').value && x.group_name===document.getElementById('member-group').value);
