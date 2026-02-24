@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AK Chit Funds</title>
+<title>AK Chit Funds - Fixed Enrollment</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -226,10 +226,11 @@ function fillMemberEdit() {
     if(id === 'new') { 
         document.getElementById('nm-name').value=''; 
         document.getElementById('nm-phone').value=''; 
+        document.getElementById('nm-group').value='';
         btn.style.display='none'; 
         return; 
     }
-    const m = members.find(x => x.id === id);
+    const m = members.find(x => x.id == id);
     document.getElementById('nm-name').value = m.name;
     document.getElementById('nm-group').value = m.group_name;
     document.getElementById('nm-phone').value = m.phone;
@@ -245,7 +246,7 @@ function fillGroupEdit() {
         btn.style.display='none'; 
         return; 
     }
-    const g = groups.find(x => x.id === id);
+    const g = groups.find(x => x.id == id);
     document.getElementById('ng-name').value = g.name;
     document.getElementById('ng-months').value = g.total_months;
     btn.style.display='block';
@@ -291,14 +292,14 @@ function renderMemberTable(pays, targetId, name) {
         html += `<div class="card">
             <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
                 <b style="font-size:13px;">📂 ${gn}</b>
-                ${pk?`<span class="picked-value-tag">PICKED: ₹${pk.picked_value}</span>`:''}
+                ${pk?`<span style="background:var(--green);color:#000;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:800;">PICKED: ₹${pk.picked_value}</span>`:''}
             </div>
             <div class="table-wrap"><table>
                 <thead><tr><th>Date</th><th>Chit Amt</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead>
                 <tbody>${list.map(x=>`<tr><td>${new Date(x.paid_on).toLocaleDateString()}</td><td>₹${x.chit_value}</td><td>₹${x.amount_paid}</td><td style="color:var(--accent)">₹${x.balance_amt}</td><td>${x.chit_picked === 'Yes' ? '✅' : '—'}</td></tr>`).join('')}</tbody>
             </table></div></div>`;
     });
-    document.getElementById(targetId).innerHTML = html || 'No data found';
+    document.getElementById(targetId).innerHTML = html || 'No history found.';
 }
 
 function onAdminMemberChange() {
@@ -334,7 +335,7 @@ function doSearch(){
     const q = document.getElementById('search-input').value.toLowerCase();
     const n = [...new Set(members.map(m=>m.name))].filter(x=>x.toLowerCase().includes(q));
     document.getElementById('search-results').style.display='block';
-    document.getElementById('search-results').innerHTML = n.map(x => `<div class="search-item" onclick="selectS('${x}')">${x}</div>`).join('');
+    document.getElementById('search-results').innerHTML = n.map(x => `<div class="search-item" onclick="selectS('${x.replace(/'/g,"")}')">${x}</div>`).join('');
 }
 function showResults(){ document.getElementById('search-results').style.display='block'; doSearch(); }
 function selectS(n){
@@ -352,22 +353,22 @@ function checkLock(){
 
 async function savePayment(){
     const n = document.getElementById('search-input').value, g = document.getElementById('member-group').value, m = members.find(x=>x.name===n && x.group_name===g);
+    if(!m) return alert("Select member and group");
     const data = { member_id: m.id, name: n, group_name: g, chit_value: parseFloat(document.getElementById('inp-chit').value)||0, amount_paid: parseFloat(document.getElementById('inp-paid').value)||0, balance_amt: parseFloat(document.getElementById('inp-bal').value)||0, chit_picked: document.getElementById('inp-picked').checked?'Yes':'No', picked_value: parseFloat(document.getElementById('inp-picked-val').value)||0, paid_on: document.getElementById('inp-date').value };
     const res = await fetch(`${SB_URL}/rest/v1/payments`,{method:'POST',headers:H,body:JSON.stringify(data)});
     if(res.ok) { alert("Saved!"); closeModal('payModal'); refreshData(); }
 }
 
-// DELETE LOGIC
 async function deleteMember() {
     const id = document.getElementById('nm-select').value;
-    if(!confirm("Are you sure you want to delete this member? All their data will be lost.")) return;
+    if(!confirm("Delete this member?")) return;
     const res = await fetch(`${SB_URL}/rest/v1/members?id=eq.${id}`, { method: 'DELETE', headers: H });
     if(res.ok) { alert("Member Deleted"); closeModal('addMemberModal'); refreshData(); }
 }
 
 async function deleteGroup() {
     const id = document.getElementById('ng-select').value;
-    if(!confirm("Are you sure you want to delete this group?")) return;
+    if(!confirm("Delete this group?")) return;
     const res = await fetch(`${SB_URL}/rest/v1/groups?id=eq.${id}`, { method: 'DELETE', headers: H });
     if(res.ok) { alert("Group Deleted"); closeModal('addGroupModal'); refreshData(); }
 }
@@ -375,19 +376,27 @@ async function deleteGroup() {
 async function executeAddMember(){
     const id = document.getElementById('nm-select').value;
     const data = { name: document.getElementById('nm-name').value, group_name: document.getElementById('nm-group').value, phone: document.getElementById('nm-phone').value };
-    const method = id === 'new' ? 'POST' : 'PATCH';
-    const url = id === 'new' ? `${SB_URL}/rest/v1/members` : `${SB_URL}/rest/v1/members?id=eq.${id}`;
-    const res = await fetch(url, { method, headers: H, body: JSON.stringify(data) });
-    if(res.ok) { alert("Success!"); closeModal('addMemberModal'); refreshData(); }
+    const isNew = id === 'new';
+    const res = await fetch(isNew ? `${SB_URL}/rest/v1/members` : `${SB_URL}/rest/v1/members?id=eq.${id}`, { 
+        method: isNew ? 'POST' : 'PATCH', 
+        headers: H, 
+        body: JSON.stringify(data) 
+    });
+    if(res.ok) { alert(isNew ? "Added!" : "Updated!"); closeModal('addMemberModal'); refreshData(); }
+    else { alert("Error saving member details."); }
 }
 
 async function executeAddGroup(){
     const id = document.getElementById('ng-select').value;
     const data = { name: document.getElementById('ng-name').value, total_months: document.getElementById('ng-months').value };
-    const method = id === 'new' ? 'POST' : 'PATCH';
-    const url = id === 'new' ? `${SB_URL}/rest/v1/groups` : `${SB_URL}/rest/v1/groups?id=eq.${id}`;
-    const res = await fetch(url, { method, headers: H, body: JSON.stringify(data) });
-    if(res.ok) { alert("Success!"); closeModal('addGroupModal'); refreshData(); }
+    const isNew = id === 'new';
+    const res = await fetch(isNew ? `${SB_URL}/rest/v1/groups` : `${SB_URL}/rest/v1/groups?id=eq.${id}`, { 
+        method: isNew ? 'POST' : 'PATCH', 
+        headers: H, 
+        body: JSON.stringify(data) 
+    });
+    if(res.ok) { alert(isNew ? "Created!" : "Updated!"); closeModal('addGroupModal'); refreshData(); }
+    else { alert("Error saving group details."); }
 }
 
 function openModal(id){ document.getElementById(id).classList.add('open'); }
