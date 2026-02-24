@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AK Chit Funds - Secure Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>AK Chit Funds</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#0a0f1e;--surface:#111827;--surface2:#1a2235;
@@ -20,34 +21,47 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-wi
 #login-overlay{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:30px;}
 .login-card{background:var(--surface);border-radius:24px;padding:30px;width:100%;border:1px solid var(--border);text-align:center;}
 
-/* NAVIGATION */
+/* TOPBAR */
 .topbar{position:sticky;top:0;z-index:100;background:rgba(10,15,30,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
 .brand-name{font-size:17px;font-weight:800;background:var(--gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
 .page{display:none;animation:fadeUp .3s ease;}
 .page.active{display:block;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .content{padding:20px 20px 180px;}
 
-/* CARDS & TABLES */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;}
-.table-wrap{overflow-x:auto; margin-top:10px; border-radius:12px; border:1px solid var(--border);}
-table{width:100%; border-collapse:collapse; font-size:11px; text-align:left;}
-th{background:var(--surface2); padding:10px; color:var(--muted); text-transform:uppercase; font-size:9px;}
-td{padding:10px; border-bottom:1px solid var(--border);}
+/* CONSOLE / STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;}
+.stat-val{font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;}
 
-/* FORMS */
-.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:12px;}
-.primary-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;color:#000;font-weight:800;cursor:pointer;}
+/* BUTTONS */
+.pay-big-btn{width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:18px;padding:18px;color:#000;font-weight:800;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:15px;}
+.primary-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;color:#000;font-weight:800;cursor:pointer;font-family:inherit;}
+.secondary-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:13px;color:var(--text);margin-top:10px;cursor:pointer;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(17,24,39,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
+.quick-add-bar{display:none;gap:8px;padding:8px 12px;background:rgba(10,15,30,0.95);border-bottom:1px solid var(--border);}
+.quick-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;}
+.quick-btn.member{background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.3); color:var(--accent);}
+.quick-btn.group{background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.3); color:var(--green);}
+.bottom-nav-btns{display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+.nav-label{font-size:10px;font-weight:500;color:var(--muted);}
+.nav-item.active .nav-label{color:var(--accent);}
 
 /* MODALS */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--surface);border-radius:24px;width:100%;max-width:380px;padding:24px;border:1px solid var(--border);}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-family:inherit;outline:none;margin-bottom:12px;font-size:13px;}
 
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(17,24,39,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
-.admin-bar{display:none;gap:8px;padding:8px 12px;background:rgba(10,15,30,0.95);border-bottom:1px solid var(--border);}
-.quick-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;}
+/* TABLES */
+.table-wrap{overflow-x:auto; margin-top:10px; border-radius:12px; border:1px solid var(--border);}
+table{width:100%; border-collapse:collapse; font-size:11px; text-align:left;}
+th{background:var(--surface2); padding:10px; color:var(--muted); text-transform:uppercase; font-size:9px;}
+td{padding:10px; border-bottom:1px solid var(--border);}
 </style>
 </head>
 <body>
@@ -55,8 +69,8 @@ td{padding:10px; border-bottom:1px solid var(--border);}
 <div id="login-overlay">
   <div class="login-card">
     <div style="font-size:40px; margin-bottom:10px;">🔐</div>
-    <h2 style="margin-bottom:20px;">AK Chit Funds Login</h2>
-    <input type="text" id="login-id" class="form-input" placeholder="Admin Name or Mobile Number">
+    <h2 style="margin-bottom:20px;">Portal Login</h2>
+    <input type="text" id="login-id" class="form-input" placeholder="Admin Name or Mobile No">
     <button class="primary-btn" onclick="handleLogin()">Sign In</button>
   </div>
 </div>
@@ -68,9 +82,22 @@ td{padding:10px; border-bottom:1px solid var(--border);}
 
 <div class="page" id="page-admin-home">
   <div class="content">
-    <div class="card">
-        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:10px; font-weight:700;">MEMBER FINANCIAL SUMMARY</label>
-        <select id="homeMemberSelect" class="form-input" onchange="onAdminMemberChange()"><option value="">-- Select Member --</option></select>
+    <div style="margin-bottom:16px;"><div style="font-size:13px;color:var(--muted);">Administrator Console</div><div style="font-size:22px;font-weight:800;">Bhanu Prasad</div></div>
+
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-val" id="st-members">0</div><div style="font-size:9px;color:var(--muted)">Members</div></div>
+      <div class="stat-box"><div class="stat-val" id="st-groups">0</div><div style="font-size:9px;color:var(--muted)">Groups</div></div>
+      <div class="stat-box"><div class="stat-val" id="st-today" style="color:var(--green)">₹0</div><div style="font-size:9px;color:var(--muted)">Today</div></div>
+    </div>
+
+    <button class="pay-big-btn" onclick="openModal('payModal')">
+      <div style="background:rgba(0,0,0,0.1); padding:10px; border-radius:12px;">💳</div>
+      <div style="text-align:left;"><div style="font-size:16px;">New Payment</div><div style="font-size:11px; opacity:0.7;">Record monthly receipt</div></div>
+    </button>
+
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px; margin-bottom:16px;">
+        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:10px; font-weight:700;">MEMBER SUMMARY</label>
+        <select id="homeMemberSelect" class="form-input" onchange="onAdminMemberChange()" style="margin-bottom:0;"><option value="">-- Select Member --</option></select>
     </div>
     <div id="adminMemberPanel"></div>
   </div>
@@ -85,24 +112,22 @@ td{padding:10px; border-bottom:1px solid var(--border);}
 
 <div class="page" id="page-groups">
   <div class="content">
-    <div style="font-size:22px;font-weight:800;margin-bottom:20px;">Group Management</div>
+    <div style="font-size:22px;font-weight:800;margin-bottom:20px;">Group Aggregates</div>
     <div id="groupReportContainer"></div>
   </div>
 </div>
 
 <div class="modal-overlay" id="payModal">
   <div class="modal">
-    <div style="font-size:16px; font-weight:800; margin-bottom:15px;">New Payment Record</div>
-    <input type="text" id="search-input" class="form-input" placeholder="Type Name..." oninput="doSearch()" onfocus="showResults()">
+    <div style="font-size:16px; font-weight:800; margin-bottom:15px;">New Payment</div>
+    <input type="text" id="search-input" class="form-input" placeholder="Search Member..." oninput="doSearch()" onfocus="showResults()">
     <div id="search-results" style="display:none; background:var(--surface2); border:1px solid var(--border); border-radius:12px; margin-bottom:12px; max-height:120px; overflow-y:auto;"></div>
     <select id="member-group" class="form-input" onchange="checkLock()" disabled></select>
-    
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
         <input type="number" id="inp-chit" class="form-input" placeholder="Chit Amt" oninput="calcBal()">
         <input type="number" id="inp-paid" class="form-input" placeholder="Paid Amt" oninput="calcBal()">
     </div>
     <input type="number" id="inp-bal" class="form-input" placeholder="Balance Due" readonly style="opacity:0.7;">
-    
     <div style="display:flex; align-items:center; gap:10px; background:var(--surface2); padding:10px; border-radius:10px; margin-bottom:15px;">
         <input type="checkbox" id="inp-picked" style="width:18px; height:18px;">
         <label for="inp-picked" style="font-size:12px;">Chit Picked?</label>
@@ -112,10 +137,31 @@ td{padding:10px; border-bottom:1px solid var(--border);}
   </div>
 </div>
 
+<div class="modal-overlay" id="addMemberModal">
+    <div class="modal">
+        <div style="font-size:16px; font-weight:800; margin-bottom:15px;">➕ New Member</div>
+        <input type="text" id="nm-name" class="form-input" placeholder="Full Name">
+        <select id="nm-group" class="form-input"></select>
+        <input type="tel" id="nm-phone" class="form-input" placeholder="Mobile Number">
+        <button class="primary-btn" onclick="addMemberAction()">Enroll Member</button>
+        <button class="secondary-btn" style="width:100%" onclick="closeModal('addMemberModal')">Cancel</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="addGroupModal">
+    <div class="modal">
+        <div style="font-size:16px; font-weight:800; margin-bottom:15px;">🏦 New Group</div>
+        <input type="text" id="ng-name" class="form-input" placeholder="Group Name">
+        <input type="number" id="ng-months" class="form-input" placeholder="Total Months">
+        <button class="primary-btn" onclick="addGroupAction()">Create Group</button>
+        <button class="secondary-btn" style="width:100%" onclick="closeModal('addGroupModal')">Cancel</button>
+    </div>
+</div>
+
 <nav class="bottom-nav">
-  <div class="admin-bar" id="admin-quick-add">
-    <div class="quick-btn" style="background:var(--accent); color:#000;" onclick="openModal('payModal')">💳 Payment</div>
-    <div class="quick-btn" style="border-color:var(--accent); color:var(--accent);" onclick="alert('Admin Member/Group Management Restored')">➕ Add Master</div>
+  <div class="quick-add-bar" id="admin-quick-add">
+    <div class="quick-btn member" onclick="openModal('addMemberModal')">➕ New Member</div>
+    <div class="quick-btn group" onclick="openModal('addGroupModal')">🏦 New Group</div>
   </div>
   <div class="bottom-nav-btns">
     <div class="nav-item active" onclick="navigate('home', this)"><span style="font-size:18px;">🏠</span><span class="nav-label">Home</span></div>
@@ -128,23 +174,35 @@ const SB_URL='https://fxmulysdirqrkixdqusg.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4bXVseXNkaXJxcmtpeGRxdXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDEzMTMsImV4cCI6MjA4NzQxNzMxM30.Vlptcq0oI5-oA4CtpshjqAvG_yEM-t1TuXfKXpfxgf4';
 const H={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
 
-let members=[], payments=[], groups=[], curUserRole='', curMemberName='';
+let members=[], payments=[], groups=[], curRole='', curMName='';
 
 async function init(){
-  const [rm, rp, rg] = await Promise.all([
-    fetch(`${SB_URL}/rest/v1/members?select=*`,{headers:H}).then(r=>r.json()),
-    fetch(`${SB_URL}/rest/v1/payments?select=*`,{headers:H}).then(r=>r.json()),
-    fetch(`${SB_URL}/rest/v1/groups?select=*`,{headers:H}).then(r=>r.json())
-  ]);
-  members=rm; payments=rp; groups=rg;
-  renderGroupSummary();
+  try {
+    const [rm, rp, rg] = await Promise.all([
+      fetch(`${SB_URL}/rest/v1/members?select=*`,{headers:H}).then(r=>r.json()),
+      fetch(`${SB_URL}/rest/v1/payments?select=*`,{headers:H}).then(r=>r.json()),
+      fetch(`${SB_URL}/rest/v1/groups?select=*`,{headers:H}).then(r=>r.json())
+    ]);
+    members=rm; payments=rp; groups=rg;
+    
+    document.getElementById('st-members').textContent = members.length;
+    document.getElementById('st-groups').textContent = groups.length;
+    const today = new Date().toISOString().split('T')[0];
+    const tCol = payments.filter(p=>p.paid_on.startsWith(today)).reduce((s,p)=>s+(p.amount_paid||0),0);
+    document.getElementById('st-today').textContent = `₹${(tCol/1000).toFixed(1)}K`;
+
+    const gSel = document.getElementById('nm-group');
+    gSel.innerHTML = '<option value="">-- Assign Group --</option>';
+    groups.forEach(g => gSel.innerHTML += `<option value="${g.name}">${g.name}</option>`);
+    
+    renderGroupAggregates();
+  } catch(e) { console.error(e); }
 }
 
 function handleLogin() {
     const id = document.getElementById('login-id').value.trim();
     if(id === 'admin') {
-        curUserRole = 'admin';
-        document.getElementById('user-badge').textContent = '🔐 ADMIN';
+        curRole = 'admin';
         document.getElementById('admin-quick-add').style.display = 'flex';
         const mSel = document.getElementById('homeMemberSelect');
         [...new Set(members.map(m=>m.name))].sort().forEach(n => mSel.innerHTML += `<option value="${n}">${n}</option>`);
@@ -152,58 +210,54 @@ function handleLogin() {
     } else {
         const found = members.find(m => m.phone === id);
         if(found) {
-            curUserRole = 'member';
-            curMemberName = found.name;
-            document.getElementById('user-badge').textContent = `👤 ${found.name.toUpperCase()}`;
-            showMemberPersonalDashboard(found.name);
-            navigate('home');
-        } else { alert('Mobile number not found'); return; }
+            curRole = 'member'; curMName = found.name;
+            showMemberPersonalDashboard(found.name); navigate('home');
+        } else { alert('User not found'); return; }
     }
     document.getElementById('login-overlay').style.display = 'none';
 }
 
 function navigate(p, el) {
     document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-    const target = curUserRole === 'admin' && p === 'home' ? 'admin-home' : (curUserRole === 'member' && p === 'home' ? 'member-home' : p);
+    const target = curRole === 'admin' && p === 'home' ? 'admin-home' : (curRole === 'member' && p === 'home' ? 'member-home' : p);
     document.getElementById('page-'+target).classList.add('active');
 }
 
-// MEMBER DASHBOARD LOGIC (PERSONAL TAB)
 function showMemberPersonalDashboard(name) {
-    document.getElementById('personal-header').innerHTML = `<div style="font-size:22px; font-weight:800;">Welcome, ${name}</div><div style="font-size:12px; color:var(--muted)">Personal Chit Summary</div>`;
     const mPays = payments.filter(p => p.name === name);
-    renderHistoryTable(mPays, 'memberPersonalPanel', name);
+    renderSummaryTable(mPays, 'memberPersonalPanel', name);
 }
 
 function onAdminMemberChange() {
     const name = document.getElementById('homeMemberSelect').value;
     const mPays = payments.filter(p => p.name === name);
-    renderHistoryTable(mPays, 'adminMemberPanel', name);
+    renderSummaryTable(mPays, 'adminMemberPanel', name);
 }
 
-function renderHistoryTable(pays, targetId, name) {
+function renderSummaryTable(pays, targetId, name) {
     const grouped = {};
     pays.forEach(p => { if(!grouped[p.group_name]) grouped[p.group_name] = []; grouped[p.group_name].push(p); });
-    let html = '';
+    let html = `<div style="font-size:18px; font-weight:800; margin-bottom:12px;">${name}</div>`;
     Object.entries(grouped).forEach(([grp, list]) => {
-        html += `<div class="card" style="border-left:4px solid var(--accent);">
+        html += `<div style="background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px; margin-bottom:16px;">
             <div style="font-weight:800; font-size:14px; margin-bottom:8px;">GROUP: ${grp}</div>
-            <div class="table-wrap"><table><thead><tr><th>Date</th><th>Chit Val</th><th>Paid</th><th>Balance</th></tr></thead>
-            <tbody>${list.map(x => `<tr><td>${new Date(x.paid_on).toLocaleDateString()}</td><td>₹${x.chit_value||0}</td><td>₹${x.amount_paid}</td><td style="color:var(--red)">₹${x.balance_amt||0}</td></tr>`).join('')}</tbody>
+            <div class="table-wrap"><table><thead><tr><th>Date</th><th>Chit Amt</th><th>Paid</th><th>Balance</th></tr></thead>
+            <tbody>${list.map(x => `<tr><td>${new Date(x.paid_on).toLocaleDateString()}</td><td>₹${x.chit_value||0}</td><td>₹${x.amount_paid}</td><td style="color:var(--accent)">₹${x.balance_amt||0}</td></tr>`).join('')}</tbody>
             </table></div></div>`;
     });
-    document.getElementById(targetId).innerHTML = html || '<div class="card">No payment history.</div>';
+    document.getElementById(targetId).innerHTML = html || 'No history found.';
 }
 
-// GROUP SUMMARY
-function renderGroupSummary() {
+function renderGroupAggregates() {
     document.getElementById('groupReportContainer').innerHTML = groups.map(g => {
         const pCount = [...new Set(payments.filter(p=>p.group_name===g.name).map(p=>p.paid_on.substring(0,7)))].length;
-        return `<div class="card"><b>📂 ${g.name}</b><br><span style="font-size:12px;color:var(--muted)">Progress: ${pCount} / ${g.total_months || 21} Months</span></div>`;
+        return `<div style="background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+            <div><b>📂 ${g.name}</b></div>
+            <div style="color:var(--accent); font-weight:700; font-size:12px;">${Math.max(0, (g.total_months||21)-pCount)} / ${g.total_months||21} Months Pending</div>
+        </div>`;
     }).join('');
 }
 
-// PAYMENT LOGIC
 function calcBal(){ const c=parseFloat(document.getElementById('inp-chit').value)||0; const p=parseFloat(document.getElementById('inp-paid').value)||0; document.getElementById('inp-bal').value=Math.max(0,c-p); }
 function showResults(){ document.getElementById('search-results').style.display='block'; doSearch(); }
 function doSearch(){
@@ -212,7 +266,7 @@ function doSearch(){
     document.getElementById('search-results').innerHTML=n.map(x=>`<div onclick="selectS('${x}')" style="padding:10px;border-bottom:1px solid var(--border);cursor:pointer;">${x}</div>`).join('');
 }
 function selectS(n){
-    curMemberName=n; document.getElementById('search-input').value=n;
+    curMName=n; document.getElementById('search-input').value=n;
     const gsel=document.getElementById('member-group'); gsel.disabled=false; gsel.innerHTML='';
     members.filter(m=>m.name===n).forEach(m=>gsel.innerHTML+=`<option value="${m.group_name}">${m.group_name}</option>`);
     document.getElementById('search-results').style.display='none';
@@ -220,7 +274,7 @@ function selectS(n){
 }
 function checkLock(){
     const g=document.getElementById('member-group').value;
-    const picked=payments.some(p=>p.name===curMemberName && p.group_name===g && p.chit_picked==='Yes');
+    const picked=payments.some(p=>p.name===curMName && p.group_name===g && p.chit_picked==='Yes');
     document.getElementById('inp-picked').disabled=picked;
 }
 async function savePayment(){
@@ -229,8 +283,16 @@ async function savePayment(){
     await fetch(`${SB_URL}/rest/v1/payments`,{method:'POST',headers:H,body:JSON.stringify(data)});
     alert("Saved!"); location.reload();
 }
+async function addMemberAction() {
+    await fetch(`${SB_URL}/rest/v1/members`,{method:'POST',headers:H,body:JSON.stringify({name:document.getElementById('nm-name').value, group_name:document.getElementById('nm-group').value, phone:document.getElementById('nm-phone').value})});
+    alert("Added!"); location.reload();
+}
+async function addGroupAction() {
+    await fetch(`${SB_URL}/rest/v1/groups`,{method:'POST',headers:H,body:JSON.stringify({name:document.getElementById('ng-name').value, total_months:document.getElementById('ng-months').value})});
+    alert("Created!"); location.reload();
+}
 
-function openModal(id){ if(curUserRole!=='admin') return; document.getElementById(id).classList.add('open'); }
+function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 init();
 </script>
