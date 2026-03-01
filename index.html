@@ -2,364 +2,839 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>AK Chit Funds</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bhannuz — Live Gold & Silver Rates Hyderabad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
-:root{
-  --bg:#0a0f1e;--surface:#111827;--surface2:#1a2235;
-  --accent:#f59e0b;--text:#f1f5f9;--muted:#64748b;
-  --border:rgba(255,255,255,0.08);
-  --gold:linear-gradient(135deg,#f59e0b,#fbbf24,#d97706);
-  --green:#10b981;--red:#ef4444;--wa:#25D366;
+:root {
+  --gold:       #C8922A;
+  --gold-hi:    #F0C060;
+  --gold-dim:   #6B4A12;
+  --silver:     #8BA0B2;
+  --silver-hi:  #C8D8E8;
+  --silver-dim: #3A4A58;
+  --bg:         #080808;
+  --bg2:        #0F0F0F;
+  --bg3:        #161616;
+  --line:       rgba(255,255,255,0.07);
+  --text:       #EAE6E0;
+  --muted:      #5A5550;
+  --up:         #3CB878;
+  --dn:         #D95C5C;
 }
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);max-width:430px;margin:0 auto;min-height:100vh;}
 
-/* COMPACT LOGIN */
-#login-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;}
-.login-card{background:var(--surface);border-radius:24px;padding:25px;width:100%;max-width:280px;border:1px solid var(--border);text-align:center;}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.topbar{position:sticky;top:0;z-index:100;background:rgba(10,15,30,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
-.brand-name{font-weight:800;background:var(--gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:16px;}
-.logout-btn{background:rgba(239,68,68,0.1); border:1px solid var(--red); color:var(--red); padding:5px 12px; border-radius:8px; font-size:10px; font-weight:700; cursor:pointer;}
+html { scroll-behavior: smooth; }
 
-.page{display:none;}
-.page.active{display:block; animation:fadeUp .3s ease;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.content{padding:20px 20px 180px;}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
-.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;}
-.stat-val{font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace;}
+/* ── GRAIN OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity: 1;
+}
 
-.pay-big-btn{width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:18px;padding:18px;color:#000;font-weight:800;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
-.primary-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;color:#000;font-weight:800;cursor:pointer;font-family:inherit;}
-.secondary-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);margin-top:10px;cursor:pointer;}
-.delete-btn{width:100%;background:rgba(239,68,68,0.1);border:1px solid var(--red);border-radius:14px;padding:12px;color:var(--red);margin-top:10px;cursor:pointer;font-weight:700;font-size:12px;}
-.wa-btn{background:rgba(37,211,102,0.1); border:1px solid var(--wa); color:var(--wa); border-radius:12px; padding:8px 12px; cursor:pointer; font-weight:700; font-size:10px; display:flex; align-items:center; gap:6px;}
+/* ── RADIAL GLOW BACKGROUNDS ── */
+.glow-gold {
+  position: fixed; top: -200px; left: -200px;
+  width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,146,42,0.08) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.glow-silver {
+  position: fixed; bottom: -200px; right: -200px;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,160,178,0.06) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
 
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(17,24,39,0.98);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
-.quick-add-bar{display:none;gap:8px;padding:10px 12px;background:rgba(10,15,30,0.95);border-bottom:1px solid var(--border);}
-.quick-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);color:var(--text);}
-.bottom-nav-btns{display:flex;padding:10px 0 calc(10px + env(safe-area-inset-bottom));}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
-.nav-label{font-size:10px;font-weight:500;color:var(--muted);}
-.nav-item.active .nav-label{color:var(--accent);}
+/* ── HEADER ── */
+header {
+  position: relative; z-index: 10;
+  border-bottom: 1px solid var(--line);
+  padding: 0 32px;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(8,8,8,0.92);
+  backdrop-filter: blur(20px);
+}
 
-.table-wrap{overflow-x:auto; margin-top:10px; border-radius:12px; border:1px solid var(--border);}
-table{width:100%; border-collapse:collapse; font-size:10px; text-align:left;}
-th{background:var(--surface2); padding:10px; color:var(--muted); text-transform:uppercase; font-size:8px;}
-td{padding:10px; border-bottom:1px solid var(--border);}
+.logo {
+  display: flex; align-items: center; gap: 14px;
+}
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:15px;margin-bottom:16px;}
-.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;font-size:13px;}
+.logo-mark {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-hi) 100%);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700; font-size: 1.3rem; color: #1A0800;
+  box-shadow: 0 0 28px rgba(200,146,42,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+  letter-spacing: -0.02em;
+}
 
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:1500;display:none;align-items:center;justify-content:center;padding:20px;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border-radius:24px;width:100%;max-width:380px;padding:24px;border:1px solid var(--border);}
+.logo-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem; font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text);
+  line-height: 1;
+}
+
+.logo-text span {
+  background: linear-gradient(90deg, var(--gold), var(--gold-hi), #FFF8E7, var(--gold));
+  background-size: 300% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-text 4s linear infinite;
+}
+
+.header-right { display: flex; align-items: center; gap: 20px; }
+
+.live-pill {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 13px;
+  border: 1px solid rgba(60,184,120,0.3);
+  border-radius: 100px;
+  background: rgba(60,184,120,0.07);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem; font-weight: 500;
+  color: var(--up); letter-spacing: 0.06em;
+}
+
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--up);
+  animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%,100% { opacity:1; box-shadow: 0 0 6px var(--up); }
+  50% { opacity:0.3; box-shadow: none; }
+}
+
+#clock {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative; z-index: 5;
+  text-align: center;
+  padding: 56px 24px 40px;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.2em;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 700; line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+}
+
+.hero-title em {
+  font-style: italic;
+  background: linear-gradient(90deg, var(--gold), var(--gold-hi), var(--gold));
+  background-size: 200% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-text 3s linear infinite;
+}
+
+@keyframes shimmer-text {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+.hero-sub {
+  font-size: 0.85rem; color: var(--muted);
+  letter-spacing: 0.03em;
+}
+
+/* ── META STRIP ── */
+.meta-strip {
+  position: relative; z-index: 5;
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.meta-item {
+  flex: 1; max-width: 220px;
+  padding: 14px 20px;
+  text-align: center;
+  border-right: 1px solid var(--line);
+}
+.meta-item:last-child { border-right: none; }
+
+.meta-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 5px;
+}
+
+.meta-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem; font-weight: 500;
+  color: var(--text);
+}
+
+.meta-val.fresh { color: var(--up); }
+.meta-val.usd-inr { color: var(--silver-hi); }
+
+/* ── MAIN LAYOUT ── */
+main {
+  position: relative; z-index: 5;
+  max-width: 1000px; margin: 0 auto;
+  padding: 36px 20px 60px;
+  display: flex; flex-direction: column; gap: 28px;
+}
+
+/* ── METAL PANEL ── */
+.panel {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  animation: rise 0.7s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+.panel.gold-panel { border-color: rgba(200,146,42,0.18); animation-delay: 0.05s; }
+.panel.silver-panel { border-color: rgba(139,160,178,0.15); animation-delay: 0.18s; }
+
+@keyframes rise {
+  from { opacity:0; transform: translateY(20px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* ── PANEL HEADER ── */
+.panel-head {
+  padding: 22px 26px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+
+.gold-panel .panel-head { background: linear-gradient(135deg, #110C03 0%, #0E0A02 100%); }
+.silver-panel .panel-head { background: linear-gradient(135deg, #090D11 0%, #070B0E 100%); }
+
+.metal-id { display: flex; align-items: center; gap: 16px; }
+
+.symbol-badge {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem; font-weight: 700;
+  flex-shrink: 0;
+}
+
+.gold-panel .symbol-badge {
+  background: linear-gradient(145deg, #C8922A, #F0C060);
+  color: #2A1200;
+  box-shadow: 0 4px 24px rgba(200,146,42,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+
+.silver-panel .symbol-badge {
+  background: linear-gradient(145deg, #6A7F90, #B8CEE0);
+  color: #0D1820;
+  box-shadow: 0 4px 20px rgba(139,160,178,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.metal-name-wrap {}
+
+.metal-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem; font-weight: 700;
+  letter-spacing: 0.02em; line-height: 1;
+  margin-bottom: 4px;
+}
+
+.gold-panel .metal-name { color: var(--gold-hi); }
+.silver-panel .metal-name { color: var(--silver-hi); }
+
+.metal-desc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem; color: var(--muted);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+
+/* Change badge */
+.chg-wrap { text-align: right; }
+
+.chg-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 12px; border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem; font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.chg-badge.up   { background: rgba(60,184,120,0.12); color: var(--up); border: 1px solid rgba(60,184,120,0.25); }
+.chg-badge.dn   { background: rgba(217,92,92,0.12); color: var(--dn); border: 1px solid rgba(217,92,92,0.25); }
+.chg-badge.flat { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--line); }
+
+.chg-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem; color: var(--muted); letter-spacing: 0.1em;
+}
+
+/* ── RATE GRID ── */
+.rate-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+}
+
+.rate-cell {
+  padding: 18px 22px;
+  display: flex; flex-direction: column; gap: 5px;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.gold-panel .rate-cell { background: #0C0901; }
+.silver-panel .rate-cell { background: #080C10; }
+
+.gold-panel .rate-cell:hover { background: rgba(200,146,42,0.05); }
+.silver-panel .rate-cell:hover { background: rgba(139,160,178,0.05); }
+
+.cell-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem; color: var(--muted);
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+
+.cell-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem; font-weight: 500;
+  letter-spacing: -0.03em;
+  transition: color 0.3s;
+}
+
+.gold-panel  .cell-value { color: var(--gold-hi); }
+.silver-panel .cell-value { color: var(--silver-hi); }
+
+.cell-unit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem; color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+/* Flash animation */
+@keyframes flashGold   { 0% { color:#fff; text-shadow: 0 0 16px rgba(240,192,96,0.9); } 100% { color:var(--gold-hi); text-shadow:none; } }
+@keyframes flashSilver { 0% { color:#fff; text-shadow: 0 0 16px rgba(200,216,232,0.9); } 100% { color:var(--silver-hi); text-shadow:none; } }
+
+.flash-gold   { animation: flashGold   0.9s ease forwards; }
+.flash-silver { animation: flashSilver 0.9s ease forwards; }
+
+/* ── TICKER BAR ── */
+.ticker-bar {
+  display: flex; border-top: 1px solid var(--line);
+}
+
+.tick-cell {
+  flex: 1; padding: 11px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-right: 1px solid var(--line);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.63rem;
+}
+.tick-cell:last-child { border-right: none; }
+
+.gold-panel   .tick-cell { background: #0A0700; color: var(--muted); }
+.silver-panel .tick-cell { background: #070A0D; color: var(--muted); }
+
+.tick-val { color: var(--text); font-weight: 500; }
+
+/* ── PROGRESS BAR ── */
+.prog-wrap { height: 2px; overflow: hidden; }
+.gold-panel   .prog-wrap { background: rgba(200,146,42,0.08); }
+.silver-panel .prog-wrap { background: rgba(139,160,178,0.06); }
+
+.prog-fill {
+  height: 100%; border-radius: 2px;
+  animation: progress var(--dur,30s) linear infinite;
+}
+
+.gold-panel   .prog-fill { background: linear-gradient(90deg, var(--gold), var(--gold-hi)); }
+.silver-panel .prog-fill { background: linear-gradient(90deg, var(--silver), var(--silver-hi)); }
+
+@keyframes progress {
+  from { width: 0; } to { width: 100%; }
+}
+
+/* ── DISCLAIMER ── */
+footer {
+  position: relative; z-index: 5;
+  border-top: 1px solid var(--line);
+  padding: 20px 32px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem; color: var(--muted);
+  letter-spacing: 0.05em; line-height: 1.9;
+}
+
+/* ── SKELETON ── */
+.skel {
+  display: inline-block;
+  border-radius: 4px; height: 1em; vertical-align: middle;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: skel-anim 1.4s infinite;
+}
+@keyframes skel-anim { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 680px) {
+  header { padding: 0 16px; }
+  .logo-text { display: none; }
+  .rate-grid { grid-template-columns: repeat(2,1fr); }
+  .ticker-bar { flex-wrap: wrap; }
+  .tick-cell { min-width: 50%; border-bottom: 1px solid var(--line); }
+  .meta-strip { flex-wrap: wrap; }
+  .meta-item { min-width: 50%; }
+  main { padding: 24px 12px 48px; }
+  .panel-head { flex-wrap: wrap; gap: 12px; }
+}
+
+@media (max-width: 420px) {
+  .rate-grid { grid-template-columns: 1fr 1fr; }
+  .cell-value { font-size: 0.9rem; }
+}
 </style>
 </head>
 <body>
 
-<div id="login-overlay">
-  <div class="login-card">
-    <div style="font-size:30px; margin-bottom:10px;">🔐</div>
-    <h3 style="margin-bottom:15px;">AK Funds</h3>
-    <input type="text" id="login-id" class="form-input" placeholder="Name or Mobile No">
-    <button class="primary-btn" onclick="handleLogin()">Sign In</button>
+<div class="glow-gold"></div>
+<div class="glow-silver"></div>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">B</div>
+    <div>
+      <div class="logo-text"><span>Bhannuz</span></div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);margin-top:2px;">Bullion · Hyderabad</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="live-pill"><div class="live-dot"></div>LIVE RATES</div>
+    <div id="clock">—</div>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-eyebrow">Bhannuz · Hyderabad · Telangana · India</div>
+  <h1 class="hero-title"><em>Gold & Silver</em><br>Live Market Rates</h1>
+  <div class="hero-sub">Real-time prices · Refreshes automatically on every rate change</div>
+</div>
+
+<!-- ═══ META STRIP ═══ -->
+<div class="meta-strip">
+  <div class="meta-item">
+    <div class="meta-label">📍 Market</div>
+    <div class="meta-val">Hyderabad, TG</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">💱 USD / INR</div>
+    <div class="meta-val usd-inr" id="usdInr"><span class="skel" style="width:60px">&nbsp;</span></div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">🔄 Last Updated</div>
+    <div class="meta-val" id="lastUpdated">Fetching…</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">📡 Next Refresh</div>
+    <div class="meta-val" id="nextRefresh">30s</div>
   </div>
 </div>
 
-<div class="topbar">
-  <div class="brand-name">🏆 AK Chit Funds</div>
-  <div style="display:flex; align-items:center; gap:10px;">
-    <div id="user-badge" style="font-size:9px; color:var(--accent); font-weight:700;"></div>
-    <button class="logout-btn" onclick="logout()">LOGOUT</button>
-  </div>
-</div>
+<!-- ═══ MAIN ═══ -->
+<main>
 
-<div class="page" id="page-admin-home">
-  <div class="content">
-    <div class="stats-row">
-      <div class="stat-box"><div class="stat-val" id="st-members">0</div><div style="font-size:9px;color:var(--muted)">Members</div></div>
-      <div class="stat-box"><div class="stat-val" id="st-groups">0</div><div style="font-size:9px;color:var(--muted)">Groups</div></div>
-      <div class="stat-box"><div class="stat-val" id="st-today" style="color:var(--green)">₹0</div><div style="font-size:9px;color:var(--muted)">Today</div></div>
-    </div>
-    <button class="pay-big-btn" onclick="openModal('payModal')">
-      <div style="background:rgba(0,0,0,0.1); padding:10px; border-radius:12px;">💳</div>
-      <div style="text-align:left;"><div style="font-size:16px;">New Payment</div><div style="font-size:10px; opacity:0.7;">Record receipt</div></div>
-    </button>
-    <div class="card"><select id="homeMemberSelect" class="form-input" onchange="onAdminMemberChange()"><option value="">-- Member Summary --</option></select></div>
-    <div id="adminMemberPanel"></div>
-  </div>
-</div>
-
-<div class="page" id="page-member-home">
-  <div class="content"><div style="font-size:20px; font-weight:800; margin-bottom:10px;" id="welcome-msg">Welcome</div><div id="memberPersonalPanel"></div></div>
-</div>
-
-<div class="page" id="page-groups">
-  <div class="content"><div style="font-size:22px;font-weight:800;margin-bottom:20px;">Groups</div><div id="groupReportContainer"></div></div>
-</div>
-
-<div class="modal-overlay" id="payModal">
-  <div class="modal">
-    <div style="font-size:16px; font-weight:800; margin-bottom:15px;">Record Payment</div>
-    <input type="date" id="inp-date" class="form-input">
-    <div style="position:relative;">
-        <input type="text" id="search-input" class="form-input" placeholder="Search Member Name..." oninput="doSearch()" onfocus="showResults()">
-        <div id="search-results" style="display:none; background:var(--surface2); border:1px solid var(--border); border-radius:12px; margin-bottom:12px; max-height:120px; overflow-y:auto; position:absolute; width:100%; z-index:200;"></div>
-    </div>
-    <select id="member-group" class="form-input" onchange="checkLock()" disabled></select>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-        <input type="number" id="inp-chit" class="form-input" placeholder="Chit Amt" oninput="calcBal()">
-        <input type="number" id="inp-paid" class="form-input" placeholder="Paid Amt" oninput="calcBal()">
-    </div>
-    <input type="number" id="inp-bal" class="form-input" placeholder="Balance" readonly style="opacity:0.7;">
-    <div style="background:var(--surface2); padding:10px; border-radius:12px; margin-bottom:15px;">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
-            <input type="checkbox" id="inp-picked" onchange="togglePickedVal()">
-            <label style="font-size:12px;">Chit Picked?</label>
+  <!-- ─── GOLD PANEL ─── -->
+  <div class="panel gold-panel">
+    <div class="panel-head">
+      <div class="metal-id">
+        <div class="symbol-badge">Au</div>
+        <div class="metal-name-wrap">
+          <div class="metal-name">Gold</div>
+          <div class="metal-desc">XAU · 24K / 22K / 18K · Hyderabad Market</div>
         </div>
-        <input type="number" id="inp-picked-val" class="form-input" placeholder="Value Amount" style="display:none;">
+      </div>
+      <div class="chg-wrap">
+        <div class="chg-badge flat" id="goldChg">— %</div>
+        <div class="chg-label">Change vs yesterday</div>
+      </div>
     </div>
-    <button class="primary-btn" onclick="savePayment()">Save Record</button>
-    <button class="secondary-btn" style="width:100%" onclick="closeModal('payModal')">Cancel</button>
-  </div>
-</div>
 
-<div class="modal-overlay" id="addMemberModal">
-    <div class="modal">
-        <div style="font-size:16px; font-weight:800; margin-bottom:15px;">Manage Member</div>
-        <select id="nm-select" class="form-input" onchange="fillMemberEdit()"><option value="new">-- Enroll New Member --</option></select>
-        <input type="text" id="nm-name" class="form-input" placeholder="Full Name">
-        <select id="nm-group" class="form-input"></select>
-        <input type="tel" id="nm-phone" class="form-input" placeholder="Phone No">
-        <button class="primary-btn" onclick="executeAddMember()">Save Member</button>
-        <button class="delete-btn" id="nm-delete-btn" style="display:none;" onclick="deleteMember()">Delete Member</button>
-        <button class="secondary-btn" style="width:100%" onclick="closeModal('addMemberModal')">Cancel</button>
+    <div class="rate-grid">
+      <div class="rate-cell">
+        <div class="cell-label">24K · Per Gram</div>
+        <div class="cell-value" id="g24g"><span class="skel" style="width:80px">&nbsp;</span></div>
+        <div class="cell-unit">Pure · 999.9 fineness</div>
+      </div>
+      <div class="rate-cell">
+        <div class="cell-label">24K · Per 10g</div>
+        <div class="cell-value" id="g24t"><span class="skel" style="width:88px">&nbsp;</span></div>
+        <div class="cell-unit">Pure · 999.9 fineness</div>
+      </div>
+      <div class="rate-cell">
+        <div class="cell-label">24K · Per Tola</div>
+        <div class="cell-value" id="g24tola"><span class="skel" style="width:84px">&nbsp;</span></div>
+        <div class="cell-unit">11.6638 g · traditional</div>
+      </div>
+      <div class="rate-cell">
+        <div class="cell-label">22K · Per Gram</div>
+        <div class="cell-value" id="g22g"><span class="skel" style="width:78px">&nbsp;</span></div>
+        <div class="cell-unit">Jewellery · 916 fineness</div>
+      </div>
+      <div class="rate-cell">
+        <div class="cell-label">22K · Per 10g</div>
+        <div class="cell-value" id="g22t"><span class="skel" style="width:84px">&nbsp;</span></div>
+        <div class="cell-unit">Jewellery · 916 fineness</div>
+      </div>
+      <div class="rate-cell">
+        <div class="cell-label">18K · Per Gram</div>
+        <div class="cell-value" id="g18g"><span class="skel" style="width:78px">&nbsp;</span></div>
+        <div class="cell-unit">Gold · 750 fineness</div>
+      </div>
     </div>
-</div>
 
-<div class="modal-overlay" id="addGroupModal">
-    <div class="modal">
-        <div style="font-size:16px; font-weight:800; margin-bottom:15px;">Manage Group</div>
-        <select id="ng-select" class="form-input" onchange="fillGroupEdit()"><option value="new">-- Create New Group --</option></select>
-        <input type="text" id="ng-name" class="form-input" placeholder="Group Name">
-        <input type="number" id="ng-months" class="form-input" placeholder="Duration (Months)">
-        <button class="primary-btn" onclick="executeAddGroup()">Save Group</button>
-        <button class="delete-btn" id="ng-delete-btn" style="display:none;" onclick="deleteGroup()">Delete Group</button>
-        <button class="secondary-btn" style="width:100%" onclick="closeModal('addGroupModal')">Cancel</button>
+    <div class="ticker-bar">
+      <div class="tick-cell">
+        <span>Intl. Spot</span>
+        <span class="tick-val" id="goldSpot">—</span>
+      </div>
+      <div class="tick-cell">
+        <span>INR / Tola</span>
+        <span class="tick-val" id="goldTola2">—</span>
+      </div>
+      <div class="tick-cell">
+        <span>Gold : Silver</span>
+        <span class="tick-val" id="gsRatio">—</span>
+      </div>
     </div>
-</div>
 
-<nav class="bottom-nav" id="main-nav" style="display:none;">
-  <div class="quick-add-bar" id="admin-quick-add">
-    <div class="quick-btn" onclick="openModal('addMemberModal')">➕ Member</div>
-    <div class="quick-btn" onclick="openModal('addGroupModal')">🏦 Group</div>
+    <div class="prog-wrap" id="goldProg">
+      <div class="prog-fill" style="--dur:30s" id="goldBar"></div>
+    </div>
   </div>
-  <div class="bottom-nav-btns">
-    <div class="nav-item active" onclick="navigate('home', this)"><span style="font-size:18px;">🏠</span><span class="nav-label">Home</span></div>
-    <div class="nav-item" id="groups-nav-item" onclick="navigate('groups', this)"><span style="font-size:18px;">📂</span><span class="nav-label">Groups</span></div>
+
+  <!-- ─── SILVER PANEL ─── -->
+  <div class="panel silver-panel">
+    <div class="panel-head">
+      <div class="metal-id">
+        <div class="symbol-badge">Ag</div>
+        <div class="metal-name-wrap">
+          <div class="metal-name">Silver</div>
+          <div class="metal-desc">XAG · 999 Fine · Hyderabad Market</div>
+        </div>
+      </div>
+      <div class="chg-wrap">
+        <div class="chg-badge flat" id="silverChg">— %</div>
+        <div class="chg-label">Change vs yesterday</div>
+      </div>
+    </div>
+
+    <div class="rate-grid">
+      <div class="rate-cell">
+        <div class="cell-label">999 Fine · Per Gram</div>
+        <div class="cell-value" id="s1g"><span class="skel" style="width:60px">&nbsp;</span></div>
+        <div class="cell-unit">Fine Silver · 999</div>
+      </div>
+      <div class="rate-cell">
+        <div class="cell-label">999 Fine · Per 10g</div>
+        <div class="cell-value" id="s10g"><span class="skel" style="width:66px">&nbsp;</span></div>
+        <div class="cell-unit">Fine Silver · 999</div>
+      </div>
+      <div class="rate-cell">
+        <div class="cell-label">Per 100 Grams</div>
+        <div class="cell-value" id="s100g"><span class="skel" style="width:74px">&nbsp;</span></div>
+        <div class="cell-unit">Fine Silver · 999</div>
+      </div>
+      <div class="rate-cell">
+        <div class="cell-label">Per 250 Grams</div>
+        <div class="cell-value" id="s250g"><span class="skel" style="width:74px">&nbsp;</span></div>
+        <div class="cell-unit">Fine Silver · 999</div>
+      </div>
+      <div class="rate-cell">
+        <div class="cell-label">Per 500 Grams</div>
+        <div class="cell-value" id="s500g"><span class="skel" style="width:78px">&nbsp;</span></div>
+        <div class="cell-unit">Fine Silver · 999</div>
+      </div>
+      <div class="rate-cell">
+        <div class="cell-label">Per Kilogram</div>
+        <div class="cell-value" id="s1kg"><span class="skel" style="width:78px">&nbsp;</span></div>
+        <div class="cell-unit">Fine Silver · 999</div>
+      </div>
+    </div>
+
+    <div class="ticker-bar">
+      <div class="tick-cell">
+        <span>Intl. Spot</span>
+        <span class="tick-val" id="silverSpot">—</span>
+      </div>
+      <div class="tick-cell">
+        <span>Per Tola</span>
+        <span class="tick-val" id="silverTola">—</span>
+      </div>
+      <div class="tick-cell">
+        <span>Per Kg (USD)</span>
+        <span class="tick-val" id="silverKgUSD">—</span>
+      </div>
+    </div>
+
+    <div class="prog-wrap" id="silverProg">
+      <div class="prog-fill" style="--dur:30s" id="silverBar"></div>
+    </div>
   </div>
-</nav>
+
+</main>
+
+<footer>
+  Rates are indicative · Based on international spot prices converted to INR · Includes approx. local market premium<br>
+  Actual dealer prices may vary · Not financial advice · Auto-refreshes every 30 seconds · Data: gold-api.com
+</footer>
 
 <script>
-const SB_URL='https://fxmulysdirqrkixdqusg.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4bXVseXNkaXJxcmtpeGRxdXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDEzMTMsImV4cCI6MjA4NzQxNzMxM30.Vlptcq0oI5-oA4CtpshjqAvG_yEM-t1TuXfKXpfxgf4';
-const H={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+// ═══════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════
+const TROY_OZ_G    = 31.1035;   // grams per troy oz
+const TOLA_G       = 11.6638;   // grams per tola
+const LOCAL_PREM   = 1.0048;    // ~0.48% Hyderabad local premium over spot
+const REFRESH_MS   = 30000;     // 30 seconds
 
-let members=[], payments=[], groups=[], curRole='', curMName='';
+let USD_INR  = 84.5;   // fallback rate
+let prevGold = null;
+let prevSilv = null;
+let countdown = REFRESH_MS / 1000;
+let countdownTimer;
 
-async function refreshData(){
+// ═══════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════
+function tickClock() {
+  const now = new Date();
+  const t = now.toLocaleTimeString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: true
+  });
+  document.getElementById('clock').textContent = t + ' IST';
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+// ═══════════════════════════════════════════════
+// COUNTDOWN
+// ═══════════════════════════════════════════════
+function startCountdown() {
+  clearInterval(countdownTimer);
+  countdown = REFRESH_MS / 1000;
+  const el = document.getElementById('nextRefresh');
+  countdownTimer = setInterval(() => {
+    countdown--;
+    el.textContent = countdown + 's';
+    if (countdown <= 0) {
+      el.textContent = '⟳ Now';
+      clearInterval(countdownTimer);
+    }
+  }, 1000);
+}
+
+// ═══════════════════════════════════════════════
+// FORMAT
+// ═══════════════════════════════════════════════
+function inr(n) {
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+function usd(n, d = 2) {
+  return '$' + n.toFixed(d);
+}
+
+// ═══════════════════════════════════════════════
+// FLASH ON CHANGE
+// ═══════════════════════════════════════════════
+function setVal(id, val, cls) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = inr(val);
+  if (el.textContent !== text) {
+    el.textContent = text;
+    el.classList.remove('flash-gold', 'flash-silver');
+    void el.offsetWidth; // reflow
+    el.classList.add(cls);
+    setTimeout(() => el.classList.remove(cls), 1000);
+  } else {
+    el.textContent = text;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// RESET PROGRESS BAR
+// ═══════════════════════════════════════════════
+function resetBar(id) {
+  const el = document.getElementById(id);
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = '';
+}
+
+// ═══════════════════════════════════════════════
+// FETCH USD/INR
+// ═══════════════════════════════════════════════
+async function fetchForex() {
   try {
-    const [rm, rp, rg] = await Promise.all([
-      fetch(`${SB_URL}/rest/v1/members?select=*`,{headers:H}).then(r=>r.json()),
-      fetch(`${SB_URL}/rest/v1/payments?select=*`,{headers:H}).then(r=>r.json()),
-      fetch(`${SB_URL}/rest/v1/groups?select=*`,{headers:H}).then(r=>r.json())
+    const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    if (r.ok) {
+      const d = await r.json();
+      if (d.rates?.INR) {
+        USD_INR = d.rates.INR;
+        document.getElementById('usdInr').textContent = '₹ ' + USD_INR.toFixed(2);
+      }
+    }
+  } catch (_) {}
+}
+
+// ═══════════════════════════════════════════════
+// MAIN FETCH
+// ═══════════════════════════════════════════════
+async function fetchRates() {
+  try {
+    const [gRes, sRes] = await Promise.all([
+      fetch('https://api.gold-api.com/price/XAU'),
+      fetch('https://api.gold-api.com/price/XAG')
     ]);
-    members=rm; payments=rp; groups=rg;
-    updateUI();
-  } catch(e) { console.error("Sync Error:", e); }
-}
 
-function updateUI(){
-    document.getElementById('st-members').textContent = members.length;
-    document.getElementById('st-groups').textContent = groups.length;
-    const t = new Date().toISOString().split('T')[0];
-    const tVal = payments.filter(p=>p.paid_on?.startsWith(t)).reduce((s,p)=>s+(p.amount_paid||0),0);
-    document.getElementById('st-today').textContent = `₹${(tVal/1000).toFixed(1)}K`;
-    
-    if(curRole === 'admin') {
-        const mSel = document.getElementById('homeMemberSelect');
-        mSel.innerHTML = '<option value="">-- Member Summary --</option>';
-        [...new Set(members.map(m=>m.name))].sort().forEach(n => mSel.innerHTML += `<option value="${n}">${n}</option>`);
+    if (!gRes.ok || !sRes.ok) throw new Error('API unavailable');
 
-        const mEdSel = document.getElementById('nm-select');
-        mEdSel.innerHTML = '<option value="new">-- Enroll New Member --</option>';
-        members.forEach(m => mEdSel.innerHTML += `<option value="${m.id}">${m.name} (${m.group_name})</option>`);
-        
-        const gEdSel = document.getElementById('ng-select');
-        gEdSel.innerHTML = '<option value="new">-- Create New Group --</option>';
-        groups.forEach(g => gEdSel.innerHTML += `<option value="${g.id}">${g.name}</option>`);
+    const g = await gRes.json();
+    const s = await sRes.json();
 
-        const nmGSel = document.getElementById('nm-group');
-        nmGSel.innerHTML = '<option value="">-- Assign Group --</option>';
-        groups.forEach(g => nmGSel.innerHTML += `<option value="${g.name}">${g.name}</option>`);
-    }
-    renderGroupsView();
-}
+    const goldUSD   = g.price;  // per troy oz
+    const silverUSD = s.price;  // per troy oz
 
-function handleLogin() {
-    const id = document.getElementById('login-id').value.trim();
-    const nav = document.getElementById('main-nav');
-    if(id === 'admin') {
-        curRole = 'admin'; nav.style.display = 'flex';
-        document.getElementById('admin-quick-add').style.display = 'flex';
-        document.getElementById('user-badge').textContent = 'ADMIN';
-        navigate('home');
-    } else {
-        const found = members.find(m => m.phone === id);
-        if(found) {
-            curRole = 'member'; curMName = found.name; nav.style.display = 'flex';
-            document.getElementById('admin-quick-add').style.display = 'none';
-            document.getElementById('groups-nav-item').style.display = 'none';
-            document.getElementById('user-badge').textContent = found.name.toUpperCase();
-            document.getElementById('welcome-msg').textContent = `Welcome, ${found.name}`;
-            renderMemberTable(payments.filter(px => px.name === curMName), 'memberPersonalPanel', curMName);
-            navigate('home');
-        } else { alert('User not found'); return; }
-    }
-    document.getElementById('login-overlay').style.display = 'none';
-    refreshData();
-}
+    // ── Per gram in INR with local premium ──
+    const goldINRg   = (goldUSD   / TROY_OZ_G) * USD_INR * LOCAL_PREM;
+    const silverINRg = (silverUSD / TROY_OZ_G) * USD_INR * LOCAL_PREM;
 
-function logout() { location.reload(); }
+    // ── Gold rates ──
+    setVal('g24g',    goldINRg,                     'flash-gold');
+    setVal('g24t',    goldINRg * 10,                'flash-gold');
+    setVal('g24tola', goldINRg * TOLA_G,            'flash-gold');
+    setVal('g22g',    goldINRg * (22/24),           'flash-gold');
+    setVal('g22t',    goldINRg * (22/24) * 10,      'flash-gold');
+    setVal('g18g',    goldINRg * (18/24),           'flash-gold');
 
-function navigate(p, el) {
-    if(el) { document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); el.classList.add('active'); }
-    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-    const target = (curRole === 'admin' && p === 'home') ? 'admin-home' : (curRole === 'member' && p === 'home' ? 'member-home' : p);
-    document.getElementById('page-'+target).classList.add('active');
-}
+    // ── Silver rates ──
+    setVal('s1g',    silverINRg,       'flash-silver');
+    setVal('s10g',   silverINRg * 10,  'flash-silver');
+    setVal('s100g',  silverINRg * 100, 'flash-silver');
+    setVal('s250g',  silverINRg * 250, 'flash-silver');
+    setVal('s500g',  silverINRg * 500, 'flash-silver');
+    setVal('s1kg',   silverINRg * 1000,'flash-silver');
 
-function sendWhatsAppSummary(gn, name) {
-    const member = members.find(m => m.name === name && m.group_name === gn);
-    const hist = payments.filter(p => p.name === name && p.group_name === gn);
-    const last = hist[hist.length-1] || {balance_amt:0};
-    const msg = `*AK CHIT FUNDS*%0A*Member:* ${name}%0A*Group:* ${gn}%0A*Current Balance:* ₹${last.balance_amt}%0A*Total Months:* ${hist.length}`;
-    window.open(`https://wa.me/91${member.phone}?text=${msg}`, '_blank');
-}
+    // ── Gold change badge ──
+    const gChp  = g.chp  ?? 0;
+    const gCh   = g.ch   ?? 0;
+    const gBadge = document.getElementById('goldChg');
+    const gSign  = gChp >= 0 ? '+' : '';
+    gBadge.textContent = `${gSign}${gChp.toFixed(2)}%`;
+    gBadge.className   = 'chg-badge ' + (gChp > 0 ? 'up' : gChp < 0 ? 'dn' : 'flat');
 
-function renderMemberTable(pays, targetId, name) {
-    const grouped = {};
-    pays.forEach(p => { if(!grouped[p.group_name]) grouped[p.group_name] = []; grouped[p.group_name].push(p); });
-    let html = '';
-    Object.entries(grouped).forEach(([gn, list]) => {
-        const pk = list.find(x => x.chit_picked === 'Yes');
-        const wa = curRole === 'admin' ? `<button class="wa-btn" onclick="sendWhatsAppSummary('${gn}','${name}')">📲 Share</button>` : '';
-        html += `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><b>📂 ${gn}</b>${wa}</div>
-            <div class="table-wrap"><table><thead><tr><th>Date</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead>
-            <tbody>${list.map(x=>`<tr><td>${new Date(x.paid_on).toLocaleDateString()}</td><td>₹${x.amount_paid}</td><td>₹${x.balance_amt}</td><td>${x.chit_picked==='Yes'?'✅':'-'}</td></tr>`).join('')}</tbody>
-            </table></div></div>`;
+    // ── Silver change badge ──
+    const sChp  = s.chp  ?? 0;
+    const sBadge = document.getElementById('silverChg');
+    const sSign  = sChp >= 0 ? '+' : '';
+    sBadge.textContent = `${sSign}${sChp.toFixed(2)}%`;
+    sBadge.className   = 'chg-badge ' + (sChp > 0 ? 'up' : sChp < 0 ? 'dn' : 'flat');
+
+    // ── Ticker values ──
+    document.getElementById('goldSpot').textContent    = usd(goldUSD) + ' /oz';
+    document.getElementById('goldTola2').textContent   = inr(goldINRg * TOLA_G);
+    document.getElementById('gsRatio').textContent     = (goldUSD / silverUSD).toFixed(1) + ' : 1';
+
+    document.getElementById('silverSpot').textContent  = usd(silverUSD) + ' /oz';
+    document.getElementById('silverTola').textContent  = inr(silverINRg * TOLA_G);
+    document.getElementById('silverKgUSD').textContent = usd((silverUSD / TROY_OZ_G) * 1000);
+
+    // ── Last updated ──
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: true
     });
-    document.getElementById(targetId).innerHTML = html || 'No data';
+    const lu = document.getElementById('lastUpdated');
+    lu.textContent = timeStr;
+    lu.classList.add('fresh');
+    setTimeout(() => lu.classList.remove('fresh'), 2500);
+
+    // ── USD/INR display fallback ──
+    if (document.getElementById('usdInr').textContent.includes('Fetching') ||
+        document.getElementById('usdInr').textContent.trim() === '') {
+      document.getElementById('usdInr').textContent = '₹ ' + USD_INR.toFixed(2);
+    }
+
+    // ── Reset progress bars ──
+    resetBar('goldBar');
+    resetBar('silverBar');
+
+    prevGold = goldINRg;
+    prevSilv = silverINRg;
+
+  } catch (err) {
+    console.error('Fetch error:', err);
+    document.getElementById('lastUpdated').textContent = 'Retry…';
+  }
 }
 
-function onAdminMemberChange() { renderMemberTable(payments.filter(p => p.name === document.getElementById('homeMemberSelect').value), 'adminMemberPanel', document.getElementById('homeMemberSelect').value); }
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+async function init() {
+  fetchForex(); // non-blocking
+  await fetchRates();
+  startCountdown();
 
-function renderGroupsView() {
-    document.getElementById('groupReportContainer').innerHTML = groups.map(g => {
-        const gPays = payments.filter(p => p.group_name === g.name);
-        const pCount = [...new Set(gPays.map(p => p.paid_on?.substring(0,7)))].length;
-        const total = g.total_months || 21;
-        return `<div class="card" onclick="toggleDetails('${g.id}')">
-            <div style="display:flex;justify-content:space-between;"><b>📂 ${g.name}</b><span style="font-size:11px;color:var(--accent)">${Math.max(0, total-pCount)} / ${total} PENDING</span></div>
-            <div id="det-${g.id}" style="display:none;margin-top:15px;border-top:1px solid var(--border);padding-top:10px;">
-                <div class="table-wrap"><table><thead><tr><th>Member</th><th>Paid</th><th>Status</th></tr></thead>
-                <tbody>${members.filter(m=>m.group_name===g.name).map(m=>{
-                    const mP = gPays.filter(px => px.member_id === m.id);
-                    const paid = mP.reduce((s,p)=>s+p.amount_paid,0);
-                    return `<tr><td>${m.name}</td><td>₹${paid}</td><td>${mP.some(p=>p.chit_picked==='Yes')?'PICKED':'-'}</td></tr>`;
-                }).join('')}</tbody></table></div>
-            </div></div>`;
-    }).join('');
+  // Auto-refresh every 30s
+  setInterval(async () => {
+    await fetchRates();
+    startCountdown();
+  }, REFRESH_MS);
+
+  // Refresh forex every 5 min
+  setInterval(fetchForex, 5 * 60 * 1000);
 }
 
-async function executeAddMember(){
-    const id = document.getElementById('nm-select').value;
-    const data = { name: document.getElementById('nm-name').value, group_name: document.getElementById('nm-group').value, phone: document.getElementById('nm-phone').value };
-    const method = id === 'new' ? 'POST' : 'PATCH';
-    const res = await fetch(id==='new' ? `${SB_URL}/rest/v1/members` : `${SB_URL}/rest/v1/members?id=eq.${id}`, { method, headers: {...H, 'Prefer': 'return=minimal'}, body: JSON.stringify(data) });
-    if(res.ok) { alert("Member Saved!"); closeModal('addMemberModal'); refreshData(); }
-}
-
-async function executeAddGroup(){
-    const id = document.getElementById('ng-select').value;
-    const data = { name: document.getElementById('ng-name').value, total_months: parseInt(document.getElementById('ng-months').value) || 21 };
-    const method = id === 'new' ? 'POST' : 'PATCH';
-    const res = await fetch(id==='new' ? `${SB_URL}/rest/v1/groups` : `${SB_URL}/rest/v1/groups?id=eq.${id}`, { method, headers: {...H, 'Prefer': 'return=minimal'}, body: JSON.stringify(data) });
-    if(res.ok) { alert("Group Saved!"); closeModal('addGroupModal'); refreshData(); }
-}
-
-async function deleteMember() { if(!confirm("Delete?")) return; await fetch(`${SB_URL}/rest/v1/members?id=eq.${document.getElementById('nm-select').value}`, { method:'DELETE', headers:H }); closeModal('addMemberModal'); refreshData(); }
-async function deleteGroup() { if(!confirm("Delete?")) return; await fetch(`${SB_URL}/rest/v1/groups?id=eq.${document.getElementById('ng-select').value}`, { method:'DELETE', headers:H }); closeModal('addGroupModal'); refreshData(); }
-
-function fillMemberEdit() {
-    const id = document.getElementById('nm-select').value;
-    if(id === 'new') { document.getElementById('nm-name').value=''; document.getElementById('nm-phone').value=''; document.getElementById('nm-delete-btn').style.display='none'; return; }
-    const m = members.find(x => x.id == id);
-    document.getElementById('nm-name').value = m.name;
-    document.getElementById('nm-group').value = m.group_name;
-    document.getElementById('nm-phone').value = m.phone;
-    document.getElementById('nm-delete-btn').style.display='block';
-}
-
-function fillGroupEdit() {
-    const id = document.getElementById('ng-select').value;
-    if(id === 'new') { document.getElementById('ng-name').value=''; document.getElementById('ng-months').value=''; document.getElementById('ng-delete-btn').style.display='none'; return; }
-    const g = groups.find(x => x.id == id);
-    document.getElementById('ng-name').value = g.name;
-    document.getElementById('ng-months').value = g.total_months;
-    document.getElementById('ng-delete-btn').style.display='block';
-}
-
-function toggleDetails(id){ const el=document.getElementById('det-'+id); el.style.display=el.style.display==='none'?'block':'none'; }
-function togglePickedVal(){ document.getElementById('inp-picked-val').style.display = document.getElementById('inp-picked').checked?'block':'none'; }
-function calcBal(){ const c=parseFloat(document.getElementById('inp-chit').value)||0; const p=parseFloat(document.getElementById('inp-paid').value)||0; document.getElementById('inp-bal').value=Math.max(0,c-p); }
-
-function doSearch(){
-    const q = document.getElementById('search-input').value.toLowerCase();
-    const n = [...new Set(members.map(m=>m.name))].filter(x=>x.toLowerCase().includes(q));
-    document.getElementById('search-results').style.display='block';
-    document.getElementById('search-results').innerHTML = n.map(x => `<div class="search-item" onclick="selectS('${x.replace(/'/g,"")}')" style="padding:10px; cursor:pointer; border-bottom:1px solid var(--border);">${x}</div>`).join('');
-}
-function showResults(){ document.getElementById('search-results').style.display='block'; doSearch(); }
-function selectS(n){
-    document.getElementById('search-input').value = n;
-    const gsel = document.getElementById('member-group'); gsel.disabled = false; gsel.innerHTML = '';
-    members.filter(m=>m.name===n).forEach(m=>gsel.innerHTML+=`<option value="${m.group_name}">${m.group_name}</option>`);
-    document.getElementById('search-results').style.display = 'none';
-}
-function checkLock(){
-    const g = document.getElementById('member-group').value;
-    const pk = payments.some(p=>p.name===document.getElementById('search-input').value && p.group_name===g && p.chit_picked==='Yes');
-    const chk = document.getElementById('inp-picked'); chk.disabled=pk; if(pk) chk.checked=false; togglePickedVal();
-}
-async function savePayment(){
-    const n = document.getElementById('search-input').value, g = document.getElementById('member-group').value, m = members.find(x=>x.name===n && x.group_name===g);
-    if(!m) return alert("Select member and group");
-    const data = { member_id: m.id, name: n, group_name: g, chit_value: parseFloat(document.getElementById('inp-chit').value)||0, amount_paid: parseFloat(document.getElementById('inp-paid').value)||0, balance_amt: parseFloat(document.getElementById('inp-bal').value)||0, chit_picked: document.getElementById('inp-picked').checked?'Yes':'No', picked_value: parseFloat(document.getElementById('inp-picked-val').value)||0, paid_on: document.getElementById('inp-date').value };
-    await fetch(`${SB_URL}/rest/v1/payments`,{method:'POST',headers:H,body:JSON.stringify(data)});
-    alert("Saved!"); closeModal('payModal'); refreshData();
-}
-
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-document.getElementById('inp-date').valueAsDate = new Date();
-refreshData();
+init();
 </script>
 </body>
 </html>
