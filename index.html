@@ -425,6 +425,163 @@ footer {
   .rate-grid { grid-template-columns: 1fr 1fr; }
   .cell-value { font-size: 0.9rem; }
 }
+/* ── AD BANNER ── */
+.ad-banner-wrap {
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 16px; overflow: hidden;
+  text-align: center;
+  animation: rise 0.7s cubic-bezier(0.22,1,0.36,1) 0.3s both;
+}
+.ad-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem; letter-spacing: 0.18em;
+  color: var(--muted); padding: 6px;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px dashed rgba(255,255,255,0.06);
+}
+.ad-placeholder {
+  min-height: 90px; display: flex;
+  align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.02);
+}
+.ad-placeholder-inner { padding: 20px; }
+
+/* ── DEALERS ── */
+.dealers-section {
+  animation: rise 0.7s cubic-bezier(0.22,1,0.36,1) 0.38s both;
+}
+.dealers-header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+}
+.dealers-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem; font-weight: 700;
+  color: var(--text);
+}
+.dealers-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem; color: var(--muted);
+  margin-top: 3px; letter-spacing: 0.06em;
+}
+.list-shop-btn {
+  background: linear-gradient(135deg, var(--gold), var(--gold-hi));
+  border: none; border-radius: 10px;
+  padding: 9px 18px; color: #1A0800;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.05em;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(200,146,42,0.3);
+  transition: opacity 0.2s;
+}
+.list-shop-btn:hover { opacity: 0.88; }
+
+.dealers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.dealer-card {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 16px; padding: 18px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.dealer-card:hover { border-color: rgba(200,146,42,0.3); transform: translateY(-2px); }
+.dealer-card.sponsored { border-color: rgba(200,146,42,0.35); background: rgba(200,146,42,0.04); }
+.dealer-card.dealer-add {
+  border: 1px dashed rgba(200,146,42,0.25);
+  background: transparent; cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; min-height: 160px;
+}
+.dealer-badge {
+  position: absolute; top: 12px; right: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem; font-weight: 700;
+  color: var(--gold); letter-spacing: 0.1em;
+  background: rgba(200,146,42,0.1);
+  border: 1px solid rgba(200,146,42,0.3);
+  border-radius: 5px; padding: 2px 7px;
+}
+.dealer-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.dealer-avatar {
+  width: 42px; height: 42px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem; font-weight: 700; flex-shrink: 0;
+}
+.dealer-name {
+  font-weight: 600; font-size: 0.92rem; color: var(--text);
+}
+.dealer-loc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem; color: var(--muted); margin-top: 2px;
+}
+.dealer-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.dtag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem; padding: 3px 8px;
+  border: 1px solid var(--line); border-radius: 5px;
+  color: var(--muted);
+}
+.dealer-footer { display: flex; align-items: center; justify-content: space-between; }
+.dealer-phone { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted); }
+.dealer-cta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem; font-weight: 700;
+  color: var(--gold); text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+.dealer-cta:hover { color: var(--gold-hi); }
+
+/* ── LISTING FORM ── */
+.form-field { margin-bottom: 14px; }
+.form-lbl {
+  display: block; margin-bottom: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem; color: var(--muted);
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.form-inp {
+  width: 100%; padding: 10px 14px;
+  background: #1A1A1A;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem; outline: none;
+  transition: border-color 0.2s;
+}
+.form-inp:focus { border-color: rgba(200,146,42,0.5); }
+.tag-check {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--line); border-radius: 8px;
+  cursor: pointer; font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem; color: var(--muted);
+  transition: all 0.15s;
+}
+.tag-check:has(input:checked) { border-color: rgba(200,146,42,0.5); color: var(--gold-hi); background: rgba(200,146,42,0.07); }
+.tag-check input { accent-color: var(--gold); }
+
+.pkg-card {
+  display: block; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 12px;
+  overflow: hidden; transition: all 0.2s;
+}
+.pkg-card:has(input:checked) { border-color: var(--gold); background: rgba(200,146,42,0.07); }
+.pkg-card input { display: none; }
+.pkg-inner { padding: 12px; text-align: center; }
+.pkg-name { font-weight: 600; font-size: 0.82rem; color: var(--text); margin-bottom: 4px; }
+.pkg-price { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--gold-hi); font-weight: 700; margin-bottom: 4px; }
+.pkg-feat { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; color: var(--muted); letter-spacing: 0.06em; }
+
 .loc-btn {
   background: rgba(200,146,42,0.07);
   border: 1px solid rgba(200,146,42,0.2);
@@ -583,7 +740,139 @@ footer {
     </div>
   </div>
 
+  <!-- ─── ADSENSE BANNER ─── -->
+  <!-- Replace the data-ad-* values below with your actual Google AdSense code -->
+  <div class="ad-banner-wrap">
+    <div class="ad-label">ADVERTISEMENT</div>
+    <!-- PASTE YOUR ADSENSE CODE HERE — example placeholder below -->
+    <!--
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script>
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    -->
+    <div class="ad-placeholder">
+      <div class="ad-placeholder-inner">
+        <div style="font-size:1.6rem;margin-bottom:8px;">💰</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);letter-spacing:0.08em;">Google AdSense Ad</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--muted);margin-top:4px;opacity:0.6;">Replace this block with your AdSense code</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── FEATURED DEALERS ─── -->
+  <div class="dealers-section">
+    <div class="dealers-header">
+      <div>
+        <div class="dealers-title">🏪 Featured Bullion Dealers</div>
+        <div class="dealers-sub">Trusted shops in Hyderabad · Verified listings</div>
+      </div>
+      <button class="list-shop-btn" onclick="openListShopModal()">+ List Your Shop</button>
+    </div>
+
+    <div class="dealers-grid">
+
+      <!-- Dealer Card 1 — Sample -->
+      <div class="dealer-card sponsored">
+        <div class="dealer-badge">⭐ SPONSORED</div>
+        <div class="dealer-top">
+          <div class="dealer-avatar" style="background:linear-gradient(135deg,#C8922A,#F0C060);color:#1A0800;">SR</div>
+          <div>
+            <div class="dealer-name">Sri Ram Jewellers</div>
+            <div class="dealer-loc">📍 Secunderabad Bullion Market</div>
+          </div>
+        </div>
+        <div class="dealer-tags">
+          <span class="dtag">Gold Coins</span>
+          <span class="dtag">Bars</span>
+          <span class="dtag">Silver</span>
+          <span class="dtag">Jewellery</span>
+        </div>
+        <div class="dealer-footer">
+          <span class="dealer-phone">📞 +91 98765 XXXXX</span>
+          <a href="#" class="dealer-cta">Contact →</a>
+        </div>
+      </div>
+
+      <!-- Dealer Card 2 — Sample -->
+      <div class="dealer-card">
+        <div class="dealer-top">
+          <div class="dealer-avatar" style="background:linear-gradient(135deg,#3A4A58,#8BA0B2);color:#E0EAF0;">MG</div>
+          <div>
+            <div class="dealer-name">Manohar Gold House</div>
+            <div class="dealer-loc">📍 Abids, Hyderabad</div>
+          </div>
+        </div>
+        <div class="dealer-tags">
+          <span class="dtag">Bullion Bars</span>
+          <span class="dtag">24K Coins</span>
+          <span class="dtag">Buy Back</span>
+        </div>
+        <div class="dealer-footer">
+          <span class="dealer-phone">📞 +91 99887 XXXXX</span>
+          <a href="#" class="dealer-cta">Contact →</a>
+        </div>
+      </div>
+
+      <!-- Add Your Shop Card -->
+      <div class="dealer-card dealer-add" onclick="openListShopModal()">
+        <div style="font-size:2rem;margin-bottom:10px;">➕</div>
+        <div class="dealer-name" style="color:var(--gold);">List Your Shop Here</div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.6;">Reach thousands of gold buyers in Hyderabad every day</div>
+        <div class="dealer-cta" style="margin-top:14px;display:inline-block;">Get Listed →</div>
+      </div>
+
+    </div>
+  </div>
+
 </main>
+
+<!-- ═══ LIST YOUR SHOP MODAL ═══ -->
+<div id="listShopModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#111;border:1px solid rgba(200,146,42,0.3);border-radius:20px;padding:28px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:0 0 80px rgba(200,146,42,0.12);">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--gold-hi);margin-bottom:4px;">List Your Shop</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:22px;">REACH THOUSANDS OF BUYERS DAILY · ₹2,000–₹5,000/MONTH</div>
+
+    <div class="form-field">
+      <label class="form-lbl">Shop Name *</label>
+      <input type="text" id="shopName" class="form-inp" placeholder="e.g. Sri Lakshmi Gold House">
+    </div>
+    <div class="form-field">
+      <label class="form-lbl">Owner / Contact Name *</label>
+      <input type="text" id="ownerName" class="form-inp" placeholder="Your name">
+    </div>
+    <div class="form-field">
+      <label class="form-lbl">Phone Number *</label>
+      <input type="tel" id="shopPhone" class="form-inp" placeholder="+91 XXXXX XXXXX">
+    </div>
+    <div class="form-field">
+      <label class="form-lbl">Shop Address</label>
+      <input type="text" id="shopAddr" class="form-inp" placeholder="e.g. Abids, Hyderabad">
+    </div>
+    <div class="form-field">
+      <label class="form-lbl">What do you sell?</label>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:6px;" id="sellTags">
+        <label class="tag-check"><input type="checkbox" value="Gold Coins"> Gold Coins</label>
+        <label class="tag-check"><input type="checkbox" value="Gold Bars"> Gold Bars</label>
+        <label class="tag-check"><input type="checkbox" value="Silver"> Silver</label>
+        <label class="tag-check"><input type="checkbox" value="Jewellery"> Jewellery</label>
+        <label class="tag-check"><input type="checkbox" value="Buy Back"> Buy Back</label>
+        <label class="tag-check"><input type="checkbox" value="Loans"> Loans</label>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-lbl">Package</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">
+        <label class="pkg-card"><input type="radio" name="pkg" value="basic" checked><div class="pkg-inner"><div class="pkg-name">Basic</div><div class="pkg-price">₹2,000/mo</div><div class="pkg-feat">Standard listing</div></div></label>
+        <label class="pkg-card"><input type="radio" name="pkg" value="sponsored"><div class="pkg-inner"><div class="pkg-name">⭐ Sponsored</div><div class="pkg-price">₹5,000/mo</div><div class="pkg-feat">Top placement + badge</div></div></label>
+      </div>
+    </div>
+
+    <button onclick="submitShopListing()" style="width:100%;margin-top:8px;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-hi));border:none;border-radius:12px;color:#1A0800;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:0.82rem;cursor:pointer;letter-spacing:0.06em;">SUBMIT LISTING REQUEST</button>
+    <button onclick="closeListShopModal()" style="width:100%;margin-top:10px;padding:11px;background:transparent;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.68rem;cursor:pointer;letter-spacing:0.06em;">CANCEL</button>
+
+    <div id="shopSubmitMsg" style="display:none;margin-top:14px;padding:12px;background:rgba(60,184,120,0.1);border:1px solid rgba(60,184,120,0.3);border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--up);text-align:center;line-height:1.7;"></div>
+  </div>
+</div>
 
 <!-- ═══ LOCATION PICKER MODAL ═══ -->
 <div id="locationModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
@@ -803,6 +1092,41 @@ async function fetchRates() {
     document.getElementById('lastUpdated').textContent = 'Retry…';
   }
 }
+
+// ═══════════════════════════════════════════════
+// DEALER LISTING MODAL
+// ═══════════════════════════════════════════════
+function openListShopModal() {
+  document.getElementById('listShopModal').style.display = 'flex';
+  document.getElementById('shopSubmitMsg').style.display = 'none';
+}
+function closeListShopModal() {
+  document.getElementById('listShopModal').style.display = 'none';
+}
+function submitShopListing() {
+  const name  = document.getElementById('shopName').value.trim();
+  const owner = document.getElementById('ownerName').value.trim();
+  const phone = document.getElementById('shopPhone').value.trim();
+  if (!name || !owner || !phone) {
+    alert('Please fill in Shop Name, Owner Name, and Phone Number.');
+    return;
+  }
+  const pkg = document.querySelector('input[name="pkg"]:checked')?.value || 'basic';
+  const tags = [...document.querySelectorAll('#sellTags input:checked')].map(i=>i.value).join(', ') || 'Not specified';
+  const addr = document.getElementById('shopAddr').value.trim() || 'Not provided';
+  const msg = document.getElementById('shopSubmitMsg');
+  msg.style.display = 'block';
+  msg.innerHTML = `✅ Request received!<br><br>
+    <b>${name}</b> · ${pkg === 'sponsored' ? '⭐ Sponsored' : 'Basic'} Package<br>
+    We'll contact <b>${owner}</b> at <b>${phone}</b> within 24 hours.<br><br>
+    WhatsApp us directly: <a href="https://wa.me/91XXXXXXXXXX?text=Hi, I want to list ${encodeURIComponent(name)} on Bhannuz" style="color:var(--gold-hi);">Click here →</a>`;
+  // Clear form
+  ['shopName','ownerName','shopPhone','shopAddr'].forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('#sellTags input').forEach(i => i.checked = false);
+}
+document.getElementById('listShopModal').addEventListener('click', function(e) {
+  if (e.target === this) closeListShopModal();
+});
 
 // ═══════════════════════════════════════════════
 // LOCATION PICKER
