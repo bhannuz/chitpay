@@ -425,6 +425,17 @@ footer {
   .rate-grid { grid-template-columns: 1fr 1fr; }
   .cell-value { font-size: 0.9rem; }
 }
+.loc-btn {
+  background: rgba(200,146,42,0.07);
+  border: 1px solid rgba(200,146,42,0.2);
+  border-radius: 10px; padding: 10px 8px;
+  color: var(--gold-hi);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; font-weight: 500;
+  cursor: pointer; letter-spacing: 0.04em;
+  transition: background 0.2s, border-color 0.2s;
+}
+.loc-btn:hover { background: rgba(200,146,42,0.15); border-color: rgba(200,146,42,0.4); }
 </style>
 </head>
 <body>
@@ -456,9 +467,11 @@ footer {
 
 <!-- ═══ META STRIP ═══ -->
 <div class="meta-strip">
-  <div class="meta-item">
-    <div class="meta-label">📍 Market</div>
-    <div class="meta-val">Hyderabad, TG</div>
+  <div class="meta-item" style="cursor:pointer;" onclick="openLocationPicker()" title="Change location">
+    <div class="meta-label">📍 Market Location</div>
+    <div class="meta-val" id="locationDisplay" style="color:var(--gold-hi);display:flex;align-items:center;gap:6px;">
+      Hyderabad, TG <span style="font-size:0.6rem;opacity:0.6;">✎</span>
+    </div>
   </div>
   <div class="meta-item">
     <div class="meta-label">💱 USD / INR</div>
@@ -484,7 +497,7 @@ footer {
         <div class="symbol-badge">Au</div>
         <div class="metal-name-wrap">
           <div class="metal-name">Gold</div>
-          <div class="metal-desc">XAU · 24K / 22K / 18K · Hyderabad Market</div>
+          <div class="metal-desc">XAU · 24K / 22K · <span id="goldLocationDesc">Hyderabad</span> Market</div>
         </div>
       </div>
       <div class="chg-wrap">
@@ -519,11 +532,6 @@ footer {
         <div class="cell-value" id="g22t"><span class="skel" style="width:84px">&nbsp;</span></div>
         <div class="cell-unit">Jewellery · 916 fineness</div>
       </div>
-      <div class="rate-cell">
-        <div class="cell-label">18K · Per Gram</div>
-        <div class="cell-value" id="g18g"><span class="skel" style="width:78px">&nbsp;</span></div>
-        <div class="cell-unit">Gold · 750 fineness</div>
-      </div>
     </div>
 
     <div class="ticker-bar">
@@ -553,7 +561,7 @@ footer {
         <div class="symbol-badge">Ag</div>
         <div class="metal-name-wrap">
           <div class="metal-name">Silver</div>
-          <div class="metal-desc">XAG · 999 Fine · Hyderabad Market</div>
+          <div class="metal-desc">XAG · 999 Fine · <span id="silverLocationDesc">Hyderabad</span> Market</div>
         </div>
       </div>
       <div class="chg-wrap">
@@ -562,36 +570,11 @@ footer {
       </div>
     </div>
 
-    <div class="rate-grid">
-      <div class="rate-cell">
-        <div class="cell-label">999 Fine · Per Gram</div>
-        <div class="cell-value" id="s1g"><span class="skel" style="width:60px">&nbsp;</span></div>
-        <div class="cell-unit">Fine Silver · 999</div>
-      </div>
-      <div class="rate-cell">
-        <div class="cell-label">999 Fine · Per 10g</div>
-        <div class="cell-value" id="s10g"><span class="skel" style="width:66px">&nbsp;</span></div>
-        <div class="cell-unit">Fine Silver · 999</div>
-      </div>
-      <div class="rate-cell">
-        <div class="cell-label">Per 100 Grams</div>
-        <div class="cell-value" id="s100g"><span class="skel" style="width:74px">&nbsp;</span></div>
-        <div class="cell-unit">Fine Silver · 999</div>
-      </div>
-      <div class="rate-cell">
-        <div class="cell-label">Per 250 Grams</div>
-        <div class="cell-value" id="s250g"><span class="skel" style="width:74px">&nbsp;</span></div>
-        <div class="cell-unit">Fine Silver · 999</div>
-      </div>
-      <div class="rate-cell">
-        <div class="cell-label">Per 500 Grams</div>
-        <div class="cell-value" id="s500g"><span class="skel" style="width:78px">&nbsp;</span></div>
-        <div class="cell-unit">Fine Silver · 999</div>
-      </div>
-      <div class="rate-cell">
-        <div class="cell-label">Per Kilogram</div>
-        <div class="cell-value" id="s1kg"><span class="skel" style="width:78px">&nbsp;</span></div>
-        <div class="cell-unit">Fine Silver · 999</div>
+    <div class="rate-grid" style="grid-template-columns:1fr;">
+      <div class="rate-cell" style="padding:28px 28px;">
+        <div class="cell-label">999 Fine Silver · Per Kilogram</div>
+        <div class="cell-value" id="s1kg" style="font-size:1.8rem;margin:8px 0;"><span class="skel" style="width:120px">&nbsp;</span></div>
+        <div class="cell-unit">Fine Silver · 999 fineness · 1000 grams</div>
       </div>
     </div>
 
@@ -616,6 +599,35 @@ footer {
   </div>
 
 </main>
+
+<!-- ═══ LOCATION PICKER MODAL ═══ -->
+<div id="locationModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+  <div style="background:#111;border:1px solid rgba(200,146,42,0.3);border-radius:20px;padding:28px;width:92%;max-width:420px;box-shadow:0 0 60px rgba(200,146,42,0.12);">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--gold-hi);margin-bottom:6px;">Change Location</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:20px;">SELECT A CITY OR TYPE CUSTOM</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;">
+      <button class="loc-btn" onclick="setLocation('Hyderabad, TG','Hyderabad')">Hyderabad</button>
+      <button class="loc-btn" onclick="setLocation('Mumbai, MH','Mumbai')">Mumbai</button>
+      <button class="loc-btn" onclick="setLocation('Delhi, DL','Delhi')">Delhi</button>
+      <button class="loc-btn" onclick="setLocation('Chennai, TN','Chennai')">Chennai</button>
+      <button class="loc-btn" onclick="setLocation('Bengaluru, KA','Bengaluru')">Bengaluru</button>
+      <button class="loc-btn" onclick="setLocation('Kolkata, WB','Kolkata')">Kolkata</button>
+      <button class="loc-btn" onclick="setLocation('Ahmedabad, GJ','Ahmedabad')">Ahmedabad</button>
+      <button class="loc-btn" onclick="setLocation('Pune, MH','Pune')">Pune</button>
+    </div>
+
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:8px;">OR ENTER CUSTOM CITY</div>
+    <div style="display:flex;gap:8px;">
+      <input id="customLocInput" type="text" placeholder="e.g. Vijayawada, AP"
+        style="flex:1;background:#1A1A1A;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.78rem;outline:none;"
+        onkeydown="if(event.key==='Enter')applyCustomLoc()">
+      <button onclick="applyCustomLoc()" style="background:linear-gradient(135deg,var(--gold),var(--gold-hi));border:none;border-radius:10px;padding:10px 16px;color:#1A0800;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:0.72rem;cursor:pointer;letter-spacing:0.05em;">SET</button>
+    </div>
+
+    <button onclick="closeLocationPicker()" style="margin-top:18px;width:100%;background:transparent;border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.68rem;cursor:pointer;letter-spacing:0.06em;">CANCEL</button>
+  </div>
+</div>
 
 <footer>
   Rates are indicative · Based on international spot prices converted to INR · Includes approx. local market premium<br>
@@ -751,14 +763,8 @@ async function fetchRates() {
     setVal('g24tola', goldINRg * TOLA_G,            'flash-gold');
     setVal('g22g',    goldINRg * (22/24),           'flash-gold');
     setVal('g22t',    goldINRg * (22/24) * 10,      'flash-gold');
-    setVal('g18g',    goldINRg * (18/24),           'flash-gold');
 
     // ── Silver rates ──
-    setVal('s1g',    silverINRg,       'flash-silver');
-    setVal('s10g',   silverINRg * 10,  'flash-silver');
-    setVal('s100g',  silverINRg * 100, 'flash-silver');
-    setVal('s250g',  silverINRg * 250, 'flash-silver');
-    setVal('s500g',  silverINRg * 500, 'flash-silver');
     setVal('s1kg',   silverINRg * 1000,'flash-silver');
 
     // ── Gold change badge ──
@@ -815,6 +821,43 @@ async function fetchRates() {
     document.getElementById('lastUpdated').textContent = 'Retry…';
   }
 }
+
+// ═══════════════════════════════════════════════
+// LOCATION PICKER
+// ═══════════════════════════════════════════════
+let currentCity = 'Hyderabad';
+
+function openLocationPicker() {
+  document.getElementById('locationModal').style.display = 'flex';
+  document.getElementById('customLocInput').value = '';
+}
+
+function closeLocationPicker() {
+  document.getElementById('locationModal').style.display = 'none';
+}
+
+function setLocation(displayName, shortName) {
+  currentCity = shortName;
+  document.getElementById('locationDisplay').innerHTML =
+    displayName + ' <span style="font-size:0.6rem;opacity:0.6;">✎</span>';
+  document.getElementById('goldLocationDesc').textContent = shortName;
+  document.getElementById('silverLocationDesc').textContent = shortName;
+  // Update hero eyebrow
+  document.querySelector('.hero-eyebrow').textContent =
+    `Bhannuz · ${displayName} · India`;
+  closeLocationPicker();
+}
+
+function applyCustomLoc() {
+  const val = document.getElementById('customLocInput').value.trim();
+  if (!val) return;
+  setLocation(val, val.split(',')[0].trim());
+}
+
+// Close modal on backdrop click
+document.getElementById('locationModal').addEventListener('click', function(e) {
+  if (e.target === this) closeLocationPicker();
+});
 
 // ═══════════════════════════════════════════════
 // INIT
