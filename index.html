@@ -497,7 +497,7 @@ footer {
         <div class="symbol-badge">Au</div>
         <div class="metal-name-wrap">
           <div class="metal-name">Gold</div>
-          <div class="metal-desc">XAU · 24K / 22K · <span id="goldLocationDesc">Hyderabad</span> Market</div>
+          <div class="metal-desc">XAU · 24K / 22K · Per 10g · <span id="goldLocationDesc">Hyderabad</span> Market</div>
         </div>
       </div>
       <div class="chg-wrap">
@@ -506,26 +506,11 @@ footer {
       </div>
     </div>
 
-    <div class="rate-grid">
-      <div class="rate-cell">
-        <div class="cell-label">24K · Per Gram</div>
-        <div class="cell-value" id="g24g"><span class="skel" style="width:80px">&nbsp;</span></div>
-        <div class="cell-unit">Pure · 999.9 fineness</div>
-      </div>
+    <div class="rate-grid" style="grid-template-columns:1fr 1fr;">
       <div class="rate-cell">
         <div class="cell-label">24K · Per 10g</div>
         <div class="cell-value" id="g24t"><span class="skel" style="width:88px">&nbsp;</span></div>
         <div class="cell-unit">Pure · 999.9 fineness</div>
-      </div>
-      <div class="rate-cell">
-        <div class="cell-label">24K · Per Tola</div>
-        <div class="cell-value" id="g24tola"><span class="skel" style="width:84px">&nbsp;</span></div>
-        <div class="cell-unit">11.6638 g · traditional</div>
-      </div>
-      <div class="rate-cell">
-        <div class="cell-label">22K · Per Gram</div>
-        <div class="cell-value" id="g22g"><span class="skel" style="width:78px">&nbsp;</span></div>
-        <div class="cell-unit">Jewellery · 916 fineness</div>
       </div>
       <div class="rate-cell">
         <div class="cell-label">22K · Per 10g</div>
@@ -540,8 +525,8 @@ footer {
         <span class="tick-val" id="goldSpot">—</span>
       </div>
       <div class="tick-cell">
-        <span>INR / Tola</span>
-        <span class="tick-val" id="goldTola2">—</span>
+        <span>24K / gram</span>
+        <span class="tick-val" id="goldPerGram">—</span>
       </div>
       <div class="tick-cell">
         <span>Gold : Silver</span>
@@ -758,10 +743,7 @@ async function fetchRates() {
     const silverINRg = (silverUSD / TROY_OZ_G) * USD_INR * LOCAL_PREM;
 
     // ── Gold rates ──
-    setVal('g24g',    goldINRg,                     'flash-gold');
     setVal('g24t',    goldINRg * 10,                'flash-gold');
-    setVal('g24tola', goldINRg * TOLA_G,            'flash-gold');
-    setVal('g22g',    goldINRg * (22/24),           'flash-gold');
     setVal('g22t',    goldINRg * (22/24) * 10,      'flash-gold');
 
     // ── Silver rates ──
@@ -784,7 +766,7 @@ async function fetchRates() {
 
     // ── Ticker values ──
     document.getElementById('goldSpot').textContent    = usd(goldUSD) + ' /oz';
-    document.getElementById('goldTola2').textContent   = inr(goldINRg * TOLA_G);
+    document.getElementById('goldPerGram').textContent = inr(goldINRg) + ' /g';
     document.getElementById('gsRatio').textContent     = (goldUSD / silverUSD).toFixed(1) + ' : 1';
 
     document.getElementById('silverSpot').textContent  = usd(silverUSD) + ' /oz';
